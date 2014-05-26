@@ -98,7 +98,13 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 
 		$scope.saveScoresheet = function(){
 			console.log('sadasd');
-			scoreSheet.save($scope.matchSchedule);
+			scoreSheet.save($scope.matchSchedule)
+				.success(function(response){
+					//$scope.matchSchedule._id = response._id;
+					console.log("saved for real", response);
+				}).error(function(data, status){
+					console.log(data, status);
+				});
 		};
 
 		$scope.changeGroup = function(group){

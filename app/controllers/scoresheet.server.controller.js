@@ -11,18 +11,22 @@ var mongoose = require('mongoose'),
  * Create a Scoresheet
  */
 exports.create = function(req, res) {
-	var scoreSheet = new ScoreSheet(req.body);
-	scoreSheet.user = req.user._id;
+	//var scoreSheet = new ScoreSheet(req.body);
+	req.body.user = req.user._id;
 
-	scoreSheet.save(function(err) {
+	var func = function(err, returnedScoresheet) {
 		if (err) {
+			console.log('error on saving scoreSheet', err);
 			return res.send(400, {
-				message: getErrorMessage(err)
+				message: err
 			});
 		} else {
-			res.jsonp(scoreSheet);
+			res.jsonp(returnedScoresheet);
 		}
-	});
+	};
+	
+	ScoreSheet.findOneAndUpdate({user: req.user._id},
+		req.body, {upsert: true}, func);
 };
 
 /**

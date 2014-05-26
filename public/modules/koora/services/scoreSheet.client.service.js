@@ -14,11 +14,12 @@ angular.module('koora').factory('ScoreSheet', ['$http', function($http){
 				});
 			});
 			scoreSheet = _.flatten(scoreSheet);
-			
+
 			console.log(scoreSheet);
 
-			$http.post('/ScoreSheet', 
+			return $http.put('/ScoreSheet', 
 				{
+					//_id: matchSchedule._id,
 					scores: scoreSheet
 				});
 		}
