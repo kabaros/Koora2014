@@ -1,0 +1,50 @@
+<section data-ng-controller="IndexController">
+    <h1 mean-token="'home-default'"></h1>
+    <div class="navbar navbar-default" role="navigation" bs-navbar>
+	  <div class="navbar-header">
+	    <a class="navbar-brand" href="#!/koora">Groups</a>
+	  </div>
+	  <ul class="nav navbar-nav" data-ng-repeat="group in matchSchedule">
+	    <li data-ng-class="{active: selectedGroup.group === group.group}">
+	    	<a href="" data-ng-click="changeGroup(group)">Group {{group.group}}</a>
+	    </li>
+	  </ul>
+	</div>
+
+    <div class="row">
+    	<div class="col-md-8">
+	    	<ul data-ng-repeat="match in selectedGroup.matches" class="list-inline">
+	    		<li data-matchid="{{match.matchid}}">
+	    			{{match.team1}} <input type="text" ng-model="match.team1Score" numbers-only="numbers-only"/> 
+	    			{{match.team2}} <input type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
+	    		</li>
+	    	</ul>
+    	</div>
+    	<div class="col-md-4">
+    		<table class="table table-striped">
+	    		<tr>
+	    			<td></td>
+	    			<td>played</td>
+	    			<td>won</td>
+	    			<td>lost</td>
+	    			<td>drawn</td>
+	    			<td>gf</td>
+	    			<td>ga</td>
+	    			<td>points</td>
+	    		</tr>
+	    		<tr data-ng-repeat="standing in standings[selectedGroup.group] | orderBy:standing.pts">
+	    			<td>{{standing.team}}</td>
+	    			<td>{{standing.played}}</td>
+	    			<td>{{standing.won}}</td>
+	    			<td>{{standing.lost}}</td>
+	    			<td>{{standing.drawn}}</td>
+	    			<td>{{standing.gf}}</td>
+	    			<td>{{standing.ga}}</td>
+	    			<td>{{standing.pts}}</td>
+	    		</tr>
+	    	</table>
+    	</div>
+    </div>
+
+    <button type="button" data-ng-click="saveScoresheet()" class="btn btn-default">Save</button>
+</section>
