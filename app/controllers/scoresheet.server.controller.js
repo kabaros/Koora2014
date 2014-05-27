@@ -12,7 +12,9 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	//var scoreSheet = new ScoreSheet(req.body);
-	req.body.user = req.user._id;
+	//req.body.user = req.user._id;
+
+	var scoreSheet = _.extend({}, req.body, {user: req.user._id})
 
 	var func = function(err, returnedScoresheet) {
 		if (err) {
@@ -26,33 +28,15 @@ exports.create = function(req, res) {
 	};
 	
 	ScoreSheet.findOneAndUpdate({user: req.user._id},
-		req.body, {upsert: true}, func);
+		scoreSheet, {upsert: true}, func);
 };
 
 /**
  * Show the current Scoresheet
  */
-exports.read = function(req, res) {
-
-};
-
-/**
- * Update a Scoresheet
- */
-exports.update = function(req, res) {
-
-};
-
-/**
- * Delete an Scoresheet
- */
-exports.delete = function(req, res) {
-
-};
-
-/**
- * List of Scoresheets
- */
-exports.list = function(req, res) {
-
+exports.getSingle = function(req, res) {
+	ScoreSheet.findOne({user: req.user._id}).populate('user', 'displayName').exec(function(err, scoreSheet) {
+		if (err) return next(err);
+		res.jsonp(scoreSheet);
+	});
 };

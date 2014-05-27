@@ -97,10 +97,8 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 		$scope.selectedGroup = $scope.matchSchedule[0];
 
 		$scope.saveScoresheet = function(){
-			console.log('sadasd');
 			scoreSheet.save($scope.matchSchedule)
 				.success(function(response){
-					//$scope.matchSchedule._id = response._id;
 					console.log("saved for real", response);
 				}).error(function(data, status){
 					console.log(data, status);
@@ -112,5 +110,22 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 				return schedule.group === group.group;
 			});
 		};
+
+		scoreSheet.get().success(function(response){
+			var savedScores = _.object(_.map(response.scores, function(scoreSheet){
+				return [scoreSheet.matchId, {team1Score: scoreSheet.team1Score, team2Score: scoreSheet.team2Score }];
+			}));
+			console.log('savedscores,', savedScores)
+			_.each($scope.matchSchedule, function(group){
+	    		_.each(group.matches, function(match){
+	    			console.log('savedscore', savedScores[match.matchId]);
+	    			match.team1Score = (savedScores[match.matchId]|| {}).team1Score;
+	    			match.team2Score = (savedScores[match.matchId]|| {}).team2Score;
+	    		});
+	    	});
+			console.log('returned', response);
+		}).error(function(data, status){
+			//console.log('error', data, status)
+		});
 	}
 ]);

@@ -5,6 +5,6 @@ var users = require('../../app/controllers/users'),
 
 module.exports = function(app) {
 	app.route('/scoresheet')
-		.get(scoresheet.list)
+		.get(scoresheet.getSingle)
 		.put(scoresheet.create);
 };

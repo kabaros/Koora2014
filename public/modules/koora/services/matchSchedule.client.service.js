@@ -9,17 +9,17 @@ angular.module('koora').service('MatchSchedule', [
 	    		group: 'A',
 	    		matches: [
 	    			{
-	    				matchid: 1,
+	    				matchId: 1,
 	    				date: '2014-06-12T16:00+0100',
 	    				team1: 'BRA',
 	    				team2: 'CRO'
 	    			},{
-	    				matchid: 2,
+	    				matchId: 2,
 	    				date: '2014-06-13T13:00+0100',
 	    				team1: 'MEX',
 	    				team2: 'CMR'
 	    			}, {
-	    				matchid: 22,
+	    				matchId: 22,
 	    				team1: 'BRA',
 	    				team2: 'MEX'
 	    			}
@@ -29,12 +29,12 @@ angular.module('koora').service('MatchSchedule', [
 	    		group: 'B',
 	    		matches: [
 	    			{
-	    				matchid: 3,
+	    				matchId: 3,
 	    				date: '2014-06-13T16:00+0100',
 	    				team1: 'ESP',
 	    				team2: 'NED'
 	    			},{
-	    				matchid: 4,
+	    				matchId: 4,
 	    				date: '2014-06-13T18:00+0100',
 	    				team1: 'CHI',
 	    				team2: 'AUS'
@@ -45,12 +45,12 @@ angular.module('koora').service('MatchSchedule', [
 	    		group: 'C',
 	    		matches: [
 	    			{
-	    				matchid: 5,
+	    				matchId: 5,
 	    				date: '2014-06-14T13:00+0100',
 	    				team1: 'COL',
 	    				team2: 'GRE',
 	    			}, {
-	    				matchid: 6,
+	    				matchId: 6,
 	    				date: '2014-06-14T22:00+0100',
 	    				team1: 'CIV',
 	    				team2: 'JAP',
@@ -59,7 +59,7 @@ angular.module('koora').service('MatchSchedule', [
 	    	}, {
 	    		group: 'D',
 	    		matches:[{
-	    				matchid: 5,
+	    				matchId: 7,
 	    				date: '2014-06-14T13:00+0100',
 	    				team1: 'COL',
 	    				team2: 'GRE',
