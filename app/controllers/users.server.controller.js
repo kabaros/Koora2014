@@ -45,7 +45,7 @@ exports.signup = function(req, res) {
 
 	// Add missing user fields
 	user.provider = 'local';
-	user.displayName = user.firstName + ' ' + user.lastName;
+	user.displayName = user.firstName;
 
 	// Then save the user 
 	user.save(function(err) {
@@ -107,7 +107,7 @@ exports.update = function(req, res) {
 		// Merge existing user
 		user = _.extend(user, req.body);
 		user.updated = Date.now();
-		user.displayName = user.firstName + ' ' + user.lastName;
+		user.displayName = user.firstName;
 
 		user.save(function(err) {
 			if (err) {
@@ -300,7 +300,6 @@ exports.saveOAuthUserProfile = function(req, providerUserProfile, done) {
 					User.findUniqueUsername(possibleUsername, null, function(availableUsername) {
 						user = new User({
 							firstName: providerUserProfile.firstName,
-							lastName: providerUserProfile.lastName,
 							username: availableUsername,
 							displayName: providerUserProfile.displayName,
 							email: providerUserProfile.email,
