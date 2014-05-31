@@ -21,5 +21,13 @@
 }
 
 .how-it-works .well.box {
-	height: 355px;
+	height: 400px;
+}
+
+.my-predictions input {
+	height: 47px;
+	width: 100px;
+	border: 1px solid rgb(245, 243, 243);
+	margin-left: 10px;
+	padding: 5px;
 }

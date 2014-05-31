@@ -1,4 +1,4 @@
-<section data-ng-controller="IndexController">
+<section class="my-predictions" data-ng-controller="IndexController">
     <h1 mean-token="'home-default'"></h1>
     <div class="navbar navbar-default" role="navigation" bs-navbar>
 	  <div class="navbar-header">
@@ -15,8 +15,12 @@
     	<div class="col-md-8">
 	    	<ul data-ng-repeat="match in selectedGroup.matches" class="list-inline">
 	    		<li data-matchid="{{match.matchid}}">
-	    			{{match.team1}} <input type="text" ng-model="match.team1Score" numbers-only="numbers-only"/> 
-	    			{{match.team2}} <input type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
+	    			<img data-ng-src="/assets/flags/{{match.team1}}.png" />
+	    			<input type="text" placeholder="{{teamsNames[match.team1]}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
+	    			
+	    			<img data-ng-src="/assets/flags/{{match.team2}}.png" />
+
+	    			<input placeholder="{{teamsNames[match.team2]}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
 	    		</li>
 	    	</ul>
     	</div>

@@ -3,9 +3,9 @@
 angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule', 'ScoreSheet', function ($scope, matchSchedule, scoreSheet) {
 		//$scope.global = Global;
 
-	    console.log(matchSchedule.schedule);
 
 	    $scope.matchSchedule = matchSchedule.schedule;
+	    $scope.teamsNames = matchSchedule.teamsNames;
 
 	    $scope.standings = {};
 	    _.each($scope.matchSchedule, function(group){

@@ -30,7 +30,8 @@ module.exports = {
 			'public/modules/**/css/*.css',
 			'public/assets/css/style.css',
 			'public/assets/css/overwrite.css',
-			'public/assets/css/koora.css'
+			'public/assets/css/koora.css',
+			'public/assets/flags/*.*'
 		],
 		js: [
 			'public/config.js',

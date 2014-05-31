@@ -8,10 +8,15 @@ angular.module('koora').directive('numbersOnly', function(){
            // again, and the 2nd time, the value will be undefined
            if (inputValue === undefined) return 0;
            var transformedInput = inputValue.replace(/[^0-9]/g, ''); 
+
+           if(transformedInput.toString().length>2){
+            transformedInput = transformedInput.substring(0,2);
+           }
+
            if (transformedInput!==inputValue) {
               modelCtrl.$setViewValue(transformedInput);
               modelCtrl.$render();
-           }         
+           }
 
            return parseInt(transformedInput || 0);         
        });
