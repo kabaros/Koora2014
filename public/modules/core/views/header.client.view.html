@@ -1,58 +1,93 @@
-<div class="container" data-ng-controller="HeaderController">
-	<div class="navbar-header">
-		<button class="navbar-toggle" type="button" data-ng-click="toggleCollapsibleMenu()">
-			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		</button>
-		<a href="/#!/" class="navbar-brand">Koora 2014</a>
+<!-- Navbar
+================================================== -->
+<div class="navbar navbar-fixed-top" role="navigation">
+	<div class="container" data-ng-controller="HeaderController">
+		<div class="container">
+			<div class="navbar-header">
+				<button class="navbar-toggle" type="button" data-ng-click="toggleCollapsibleMenu()">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="/#!/" class="navbar-brand">Koora 2014</a>
+			</div>
+
+			<!-- <div class="navbar-header"><a class="logo navbar-brand" href="index.html">
+			<img src="assets/img/logo.png" alt="">
+			</a></div> -->
+			<!-- logo -->
+			
+			<!-- end logo -->
+			<!-- top menu -->
+			<div>
+				
+				<nav>
+					<ul class="nav topnav navbar-nav">
+						<li class="dropdown success">
+							<a href="#!/">
+								<span class="glyphicon glyphicon-home">
+									Home
+								</span>
+							</a>
+						</li>
+						<li class="dropdown primary">
+							<a href="#">
+								<span class="glyphicon glyphicon-th-list">
+									 My Scores
+								</span>
+							</a>
+						</li>
+						<li class="dropdown danger">
+							<a href="/#!/results">
+								<span class="glyphicon glyphicon-glass">
+									Results
+								</span>
+							</a>
+						</li>
+						<ul class="nav navbar-nav navbar-right" data-ng-hide="authentication.user">
+							<li class="inverse" ui-route="/signup" ng-class="{active: $uiRoute}">
+								<a href="/#!/signup">
+									<span class="glyphicon glyphicon-pencil">
+										Signup
+									</span>
+								</a>
+							</li>
+							<li class="divider-vertical"></li>
+							<li class="inverse" ui-route="/signin" ng-class="{active: $uiRoute}">
+								<a href="/#!/signin">
+									<span class="glyphicon glyphicon-chevron-right">
+										Signin
+									</span>
+								</a>
+							</li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									<span class="glyphicon glyphicon-user" data-ng-bind="authentication.user.firstName"></span> <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a href="/#!/settings/profile">Edit Profile</a>
+									</li>
+									<li>
+										<a href="/#!/settings/accounts">Manage Social Accounts</a>
+									</li>
+									<li data-ng-show="authentication.user.provider === 'local'">
+										<a href="/#!/settings/password">Change Password</a>
+									</li>
+									<li class="divider"></li>
+									<li>
+										<a href="/auth/signout">Signout</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</ul>
+				</nav>
+			</div>
+			<!-- end menu -->
+		</div>
 	</div>
-	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
-		<ul class="nav navbar-nav" data-ng-if="menu.shouldRender(authentication.user);">
-			<li data-ng-repeat="item in menu.items" data-ng-if="item.shouldRender(authentication.user);" ng-switch="item.menuItemType" ui-route="{{item.uiRoute}}" class="{{item.menuItemClass}}" ng-class="{active: ($uiRoute)}" dropdown="item.menuItemType === 'dropdown'">
-				<a ng-switch-when="dropdown" class="dropdown-toggle">
-					<span data-ng-bind="item.title"></span>
-					<b class="caret"></b>
-				</a>
-				<ul ng-switch-when="dropdown" class="dropdown-menu">
-					<li data-ng-repeat="subitem in item.items" data-ng-if="subitem.shouldRender(authentication.user);" ui-route="{{subitem.uiRoute}}" ng-class="{active: $uiRoute}">
-						<a href="/#!/{{subitem.link}}" data-ng-bind="subitem.title"></a>
-					</li>
-				</ul>
-				<a ng-switch-default href="/#!/{{item.link}}" data-ng-bind="item.title"></a>
-			</li>
-		</ul>
-		<ul class="nav navbar-nav navbar-right" data-ng-hide="authentication.user">
-			<li ui-route="/signup" ng-class="{active: $uiRoute}">
-				<a href="/#!/signup">Signup</a>
-			</li>
-			<li class="divider-vertical"></li>
-			<li ui-route="/signin" ng-class="{active: $uiRoute}">
-				<a href="/#!/signin">Signin</a>
-			</li>
-		</ul>
-		<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
-			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-					<span data-ng-bind="authentication.user.displayName"></span> <b class="caret"></b>
-				</a>
-				<ul class="dropdown-menu">
-					<li>
-						<a href="/#!/settings/profile">Edit Profile</a>
-					</li>
-					<li>
-						<a href="/#!/settings/accounts">Manage Social Accounts</a>
-					</li>
-					<li data-ng-show="authentication.user.provider === 'local'">
-						<a href="/#!/settings/password">Change Password</a>
-					</li>
-					<li class="divider"></li>
-					<li>
-						<a href="/auth/signout">Signout</a>
-					</li>
-				</ul>
-			</li>
-		</ul>
-	</nav>
 </div>

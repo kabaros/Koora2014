@@ -27,7 +27,10 @@ module.exports = {
 			]
 		},
 		css: [
-			'public/modules/**/css/*.css'
+			'public/modules/**/css/*.css',
+			'public/assets/css/style.css',
+			'public/assets/css/overwrite.css',
+			'public/assets/css/koora.css'
 		],
 		js: [
 			'public/config.js',

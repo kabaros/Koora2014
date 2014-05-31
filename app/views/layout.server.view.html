@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-
 <head>
 	<title>{{title}}</title>
 
@@ -31,7 +30,7 @@
 
 	<!-- Fav Icon -->
 	<link href="/modules/core/img/brand/favicon.ico" rel="shortcut icon" type="image/x-icon">
-
+	
 	<!--Application CSS Files-->
 	{% for cssFile in cssFiles %}<link rel="stylesheet" href="{{cssFile}}">
 	{% endfor %}
@@ -40,15 +39,34 @@
 	<!--[if lt IE 9]>
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
+
+	<!-- fav and touch icons -->
+	<link rel="shortcut icon" href="assets/ico/favicon.ico">
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
 </head>
 
 <body class="ng-cloak">
-	<header data-ng-include="'/modules/core/views/header.client.view.html'" class="navbar navbar-fixed-top navbar-inverse"></header>
-	<section class="content">
+
+	<header data-ng-include="'/modules/core/views/header.client.view.html'"></header>
+
+
+	<section class="maincontent">
 		<section class="container">
 			{% block content %}{% endblock %}
 		</section>
 	</section>
+
+
+	<section class="how-it-works" data-ng-include="'/modules/core/views/how-it-works.client.view.html'">
+	</section>
+
+	<!-- Footer
+	================================================== -->
+	<footer class="footer" data-ng-include="'/modules/core/views/footer.client.view.html'">
+	</footer>
 
 	<!--Embedding The User Object-->
 	<script type="text/javascript">
@@ -64,6 +82,7 @@
 	<script type="text/javascript" src="http://localhost:35729/livereload.js"></script>
 
 	{% endif %}
-</body>
 
+</body>
 </html>
+

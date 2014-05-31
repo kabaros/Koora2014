@@ -1,0 +1,25 @@
+/* Koora stuff */
+.maincontent {
+	padding: 75px 0 20px;
+}
+
+.navbar {
+	border: 1px solid #d4d4d4;
+}
+
+.well-success, .well-success:hover {
+	background-color: #007600;
+}
+
+.well-primary, .well-primary:hover {
+	background-color: #3200fe;
+}
+
+.well-warning, .well-warning:hover {
+	background-color: #fefe00;
+	color: #000;
+}
+
+.how-it-works .well.box {
+	height: 355px;
+}
