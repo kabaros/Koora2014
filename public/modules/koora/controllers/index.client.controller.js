@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule', 'ScoreSheet', function ($scope, matchSchedule, scoreSheet) {
+angular.module('koora').controller('IndexController', ['$scope', 'Authentication', 'MatchSchedule', 'ScoreSheet', function ($scope, Authentication, matchSchedule, scoreSheet) {
 		//$scope.global = Global;
-
+		$scope.authentication = Authentication;
 
 	    $scope.matchSchedule = matchSchedule.schedule;
 	    $scope.teamsNames = matchSchedule.teamsNames;
@@ -30,6 +30,7 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 
 	    $scope.$watch('matchSchedule', function(newValue, oldValue){
 	    	//console.log(oldValue, newValue);
+	    	$scope.missingScores = [];
 	    	var standings = $scope.standings;
 	  
 	    	var standingChanged = false;
@@ -38,12 +39,15 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 	    		var currentgroup = standings[group.group];
 	    		clearStanding(currentgroup);
 
+	    		group.scoresAdded = 0;
+
 	    		for(var j=0; j<group.matches.length; j++){
 	    			var match = group.matches[j],
 	    				team1 = match.team1,
 	    				team2 = match.team2;
 
 	    				if(!_.isUndefined(match.team1Score) && !_.isUndefined(match.team2Score)){
+	    					group.scoresAdded++;
 	    					standingChanged = true;
 	    					//teamScore = {played: 0, points: team1points}
 	    					
@@ -77,6 +81,12 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 	    				}
 	    		}
 
+	    		if(group.scoresAdded !== 6) {
+	    			$scope.missingScores.push("Group " + group.group
+	    				+ " is missing " + (6-group.scoresAdded)
+	    				+ " scores.");
+	    		}
+
 	    		$scope.standings[group.group].sort(function(a, b){
 	    			if(a.pts !== b.pts)
 	    				return a.pts<b.pts;
@@ -96,7 +106,7 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 		
 		$scope.selectedGroup = $scope.matchSchedule[0];
 
-		$scope.saveScoresheet = function(){
+		var saveScoresheet = function(){
 			scoreSheet.save($scope.matchSchedule)
 				.success(function(response){
 					console.log("saved for real", response);
@@ -110,6 +120,16 @@ angular.module('koora').controller('IndexController', ['$scope', 'MatchSchedule'
 				return schedule.group === group.group;
 			});
 		};
+
+		$scope.checkMissingScores = function(){
+			
+	    	if($scope.missingScores.length == 0){
+	    		$scope.showMissingScores = false;
+	    		saveScoresheet();
+	    	} else {
+				$scope.showMissingScores = true;
+	    	}
+		}
 
 		scoreSheet.get().success(function(response){
 			var savedScores = _.object(_.map(response.scores, function(scoreSheet){

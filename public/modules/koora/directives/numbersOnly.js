@@ -12,6 +12,8 @@ angular.module('koora').directive('numbersOnly', function(){
            if(transformedInput.toString().length>2){
             transformedInput = transformedInput.substring(0,2);
            }
+           if(transformedInput.toString().length == 2 && transformedInput.toString()[0] === "0")
+            transformedInput = transformedInput.substring(1);
 
            if (transformedInput!==inputValue) {
               modelCtrl.$setViewValue(transformedInput);
