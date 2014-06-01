@@ -18,6 +18,12 @@ var ScoresheetSchema = new Schema({
 		team1Score: Number,
 		team2Score: Number
 	}],
+	extraPredictions: {
+		qualifiers: [String],
+		finalist1: String,
+		finalist2: String,
+		winner: String
+	}
 });
 
 mongoose.model('Scoresheet', ScoresheetSchema);

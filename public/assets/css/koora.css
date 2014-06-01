@@ -35,7 +35,7 @@
 
 .prediction-options {
 	margin-top: 25px;
-	text-align: right;
+	/*text-align: right;*/
 }
 
 .group-selector {
@@ -46,18 +46,24 @@
 }
 
 .save-predictions {
+	text-align: center;
+}
+
+.save-predictions button {
 	height: 45px;
 	margin-bottom: 10px;
+	text-align: center;
 }
 
 img.standing-flag {
 	width: 35px;
 	height: 23px;
 }
-.prediction-options {
-	position: fixed;
 
-	
+@media (min-width: 992px){
+	.prediction-options {
+		position: fixed;
+	}
 }
 
  .match-date{
@@ -93,4 +99,14 @@ img.standing-flag {
 }
 .alert.missing-scores {
 	text-align: center;
+}
+.finalists-prediction .vs {
+	text-align: center;
+	margin: 5px;
+}
+.finalists-prediction label {
+	
+}
+.finalists-prediction select {
+	margin-bottom: 5px;
 }

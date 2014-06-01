@@ -1,0 +1,26 @@
+<div data-ng-repeat="match in selectedGroup.matches">
+	<div class="match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}}</div class="match-date">
+	<div class="match-row" data-matchid="{{match.matchid}}">
+		<div>
+    		<div>
+    			<div class="team">
+    				<img data-ng-src="/assets/flags/{{match.team1}}.png" /> {{teamsNames[match.team1]}}
+    			</div>
+    			<div class="vs">vs</div>
+    			<div class="team">
+    				<img data-ng-src="/assets/flags/{{match.team2}}.png" />
+    				{{teamsNames[match.team2]}}
+    			</div>
+    		</div>
+    		<div>
+    			<div class="team score">
+    				<input type="text" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
+    			</div>
+    			<div class="vs"></div>
+    			<div class="team score">
+    				<input placeholder="{{match.team2}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
+    			</div>
+    		</div>
+		</div>
+	</div>
+</div>

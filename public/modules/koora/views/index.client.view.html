@@ -2,89 +2,11 @@
 	<div class="row">
 		<div class="col-md-7">
 			<h1 mean-token="'home-default'"></h1>
-			<div data-ng-hide="authentication.user">
-	    		<div class="alert alert-warning alert-dismissable">
-				  <button type="button" tooltip="save all" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-				  <strong>Warning!</strong> Please <a class="alert-link" href="#!/signin">login</a> or <a  class="alert-link" href="#!/signup">register</a> first to be able to save your predictions.
-				</div>
-			</div>
-			<div data-ng-repeat="match in selectedGroup.matches">
-	    		<div class="match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}}</div class="match-date">
-	    		<div class="match-row" data-matchid="{{match.matchid}}">
-		    		<div>
-			    		<div>
-			    			<div class="team">
-			    				<img data-ng-src="/assets/flags/{{match.team1}}.png" /> {{teamsNames[match.team1]}}
-			    			</div>
-			    			<div class="vs">vs</div>
-			    			<div class="team">
-			    				<img data-ng-src="/assets/flags/{{match.team2}}.png" />
-			    				{{teamsNames[match.team2]}}
-			    			</div>
-			    		</div>
-			    		<div>
-			    			<div class="team score">
-			    				<input type="text" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
-			    			</div>
-			    			<div class="vs"></div>
-			    			<div class="team score">
-			    				<input placeholder="{{match.team2}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
-			    			</div>
-			    		</div>
-		    		</div>
-	    		</div>
-	    	</div>
+			
+			<div data-ng-include="'/modules/koora/views/predictions/score-sheet.client.view.html'"></div>
     	</div>
-		<div class="col-md-5">
-			<div class="prediction-options">			
-				
-				<select class="group-selector" ng-model="selectedGroup" ng-options="'Group ' + group.group  + ((group.scoresAdded === 6)?'&nbsp;&nbsp;&#x2713;': '') for group in matchSchedule">
-					<option value="">choose group</option>
-				</select>
-				
-				<div class="standings-table">
-			    	<div>
-			    		<table class="table table-striped">
-				    		<tr>
-				    			<td></td>
-				    			<td></td>
-				    			<td>played</td>
-				    			<td>won</td>
-				    			<td>lost</td>
-				    			<td>drawn</td>
-				    			<td>gf</td>
-				    			<td>ga</td>
-				    			<td>points</td>
-				    		</tr>
-				    		<tr data-ng-repeat="standing in standings[selectedGroup.group] | orderBy:standing.pts">
-				    			<td>
-				    				<img class="standing-flag" data-ng-src="/assets/flags/{{standing.team}}.png" />
-				    			</td>
-				    			<td>{{standing.team}}</td>
-				    			<td>{{standing.played}}</td>
-				    			<td>{{standing.won}}</td>
-				    			<td>{{standing.lost}}</td>
-				    			<td>{{standing.drawn}}</td>
-				    			<td>{{standing.gf}}</td>
-				    			<td>{{standing.ga}}</td>
-				    			<td>{{standing.pts}}</td>
-				    		</tr>
-				    	</table>
-			    	</div>
-			    </div>
-
-			    <button data-ng-click="checkMissingScores()" type="button" class="btn btn-success save-predictions">Save my predictions</button>
-
-			    <div class="alert alert-warning missing-scores" data-ng-show="showMissingScores">
-				  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-				  <strong>Please enter all scores before saving.</strong>
-				  	<ul data-ng-repeat="v in missingScores" class="list-unstyled">
-			    		<li>{{v}}</li>
-			    	</ul>
-				</div>
-			</div>
-		</div>
-
+		<div class="col-md-5" data-ng-include="'/modules/koora/views/predictions/standings.client.view.html'">
+			
 	</div>
 <!-- 
     

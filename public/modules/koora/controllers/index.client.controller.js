@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('koora').controller('IndexController', ['$scope', 'Authentication', 'MatchSchedule', 'ScoreSheet', function ($scope, Authentication, matchSchedule, scoreSheet) {
+angular.module('koora').controller('IndexController', ['$scope','$modal', 'Authentication', 'MatchSchedule', 'ScoreSheet',  function ($scope, $modal, Authentication, matchSchedule, scoreSheet) {
 		//$scope.global = Global;
 		$scope.authentication = Authentication;
 
@@ -31,6 +31,7 @@ angular.module('koora').controller('IndexController', ['$scope', 'Authentication
 	    $scope.$watch('matchSchedule', function(newValue, oldValue){
 	    	//console.log(oldValue, newValue);
 	    	$scope.missingScores = [];
+	    	$scope.qualifiers = {};
 	    	var standings = $scope.standings;
 	  
 	    	var standingChanged = false;
@@ -75,7 +76,6 @@ angular.module('koora').controller('IndexController', ['$scope', 'Authentication
 			    				team1Standing.pts  += 3;
 			    			else if (match.team2Score > match.team1Score)
 			    				team2Standing.pts += 3;
-
 			    			// currentgroup[team1] = team1Standing;
 			    			// currentgroup[team2] = team2Standing;
 	    				}
@@ -100,19 +100,29 @@ angular.module('koora').controller('IndexController', ['$scope', 'Authentication
 	    				}
 	    			}
 	    		});
+
+	    		var firstQualifier = $scope.standings[group.group][0].team,
+	    			secondQualifier = $scope.standings[group.group][1].team;
+
+	    		group.qualifiers = [firstQualifier, secondQualifier];
+
+	    		$scope.qualifiers[firstQualifier] = $scope.teamsNames[firstQualifier];
+	    		$scope.qualifiers[secondQualifier] = $scope.teamsNames[secondQualifier];
 	    	}
+	    	console.log("missingScores", $scope.missingScores.length);
 	    	if(standingChanged) console.log('latestStanding', $scope.standings);
 	    }, true);
 		
 		$scope.selectedGroup = $scope.matchSchedule[0];
 
 		var saveScoresheet = function(){
-			scoreSheet.save($scope.matchSchedule)
-				.success(function(response){
-					console.log("saved for real", response);
-				}).error(function(data, status){
-					console.log(data, status);
-				});
+			debugger;
+			return scoreSheet.save($scope.matchSchedule, {
+				qualifiers: _.map($scope.qualifiers, function(v, k){return k;}),
+				finalist1: $scope.finalist1,
+				finalist2: $scope.finalist2,
+				winner: $scope.winner
+			});
 		};
 
 		$scope.changeGroup = function(group){
@@ -121,13 +131,27 @@ angular.module('koora').controller('IndexController', ['$scope', 'Authentication
 			});
 		};
 
+		//var successSaveModal = $modal.open({title: 'My Title', content: 'My Content', show: false});
+
 		$scope.checkMissingScores = function(){
 			
-	    	if($scope.missingScores.length == 0){
+	    	if($scope.missingScores.length == 0 && $scope.finalist1 && $scope.finalist2 && $scope.winner){
 	    		$scope.showMissingScores = false;
-	    		saveScoresheet();
-	    	} else {
-				$scope.showMissingScores = true;
+	    		$scope.showMissingFinalists = false;
+	    		saveScoresheet()
+					.success(function(response){
+						console.log("saved for real", response);
+						$modal.open({template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved!</h3></div><div class="modal-body">Now sit back, relax and enjoy the fun.<br/><br/>Your predictions will be locked for changes two hours before the opening game.</div>'});
+					}).error(function(data, status){
+						console.log(data, status);
+						alert("error while saving");
+					});
+	    	} else if ($scope.missingScores.length > 0){
+	    		$scope.showMissingScores = true;
+	    	}
+	    	 else if (!$scope.finalist1 || !$scope.finalist2 || !$scope.winner){
+	    	 	$scope.showMissingScores = false;
+				$scope.showMissingFinalists = true;
 	    	}
 		}
 
@@ -135,7 +159,7 @@ angular.module('koora').controller('IndexController', ['$scope', 'Authentication
 			var savedScores = _.object(_.map(response.scores, function(scoreSheet){
 				return [scoreSheet.matchId, {team1Score: scoreSheet.team1Score, team2Score: scoreSheet.team2Score }];
 			}));
-			console.log('savedscores,', savedScores)
+			// console.log('savedscores,', savedScores)
 			_.each($scope.matchSchedule, function(group){
 	    		_.each(group.matches, function(match){
 	    			console.log('savedscore', savedScores[match.matchId]);
@@ -143,6 +167,10 @@ angular.module('koora').controller('IndexController', ['$scope', 'Authentication
 	    			match.team2Score = (savedScores[match.matchId]|| {}).team2Score;
 	    		});
 	    	});
+
+	    	$scope.$root.finalist1 = response.extraPredictions.finalist1;
+	    	$scope.$root.finalist2 = response.extraPredictions.finalist2;
+	    	$scope.$root.winner = response.extraPredictions.winner;
 			console.log('returned', response);
 		}).error(function(data, status){
 			//console.log('error', data, status)

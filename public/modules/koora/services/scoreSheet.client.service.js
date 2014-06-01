@@ -5,7 +5,14 @@ angular.module('koora').factory('ScoreSheet', ['$http', function($http){
 		get: function(){
 			return $http.get('/ScoreSheet');
 		},
-		save: function(matchSchedule){
+		save: function(matchSchedule, extraPredictions){
+			//extraPredictions
+			//{
+			// 	qualifiers: $scope.qualifiers,
+			// 	finalist1: $scope.finalist1,
+			// 	finalist2: $scope.finalist2,
+			// 	winner: $scope.winner
+			// }
 			console.log('SAVED', matchSchedule);
 			var scoreSheet = _.map(matchSchedule, function(group){
 				 return _.map(group.matches, function(match){
@@ -23,7 +30,8 @@ angular.module('koora').factory('ScoreSheet', ['$http', function($http){
 			return $http.put('/ScoreSheet', 
 				{
 					//_id: matchSchedule._id,
-					scores: scoreSheet
+					scores: scoreSheet,
+					extraPredictions: extraPredictions
 				});
 		}
 	}
