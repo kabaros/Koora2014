@@ -5,12 +5,15 @@ angular.module('koora').config(['$stateProvider',
 	function($stateProvider) {
 		// Koora state routing
 		$stateProvider.
-		state('koora', {
-			url: '/koora',
-			templateUrl: 'modules/koora/views/index.client.view.html'
+		state('my-predictions', {
+			url: '/my-predictions',
+			templateUrl: 'modules/koora/views/my-predictions.client.view.html'
+		}).
+		state('my-pools', {
+			url: '/my-pools',
+			templateUrl: 'modules/koora/views/my-pools.client.view.html'
 		});
 	}
 ])
 
-angular.module('kooraConfiguration', [])
-	.constant('HOST', 'sada');
+angular.module('kooraConfiguration', []);

@@ -1,0 +1,12 @@
+<div class="maincontent" data-ng-controller="MyPoolsController">
+
+	<h2>My POOLS</h2>
+	<select ng-model="selectedPool" ng-hide="!authentication.user || myPools.length === 0">
+		<option selected>Select a pool</option>
+	</select>
+	<div ng-show="!authentication.user">
+		<div>
+		You need to <a href="#!/signin">Login</a> in order to start a new pool or join an existing one.
+	</div>
+	<div ng-show></div>
+</div>

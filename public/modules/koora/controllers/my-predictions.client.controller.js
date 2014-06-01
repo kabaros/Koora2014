@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('koora').controller('IndexController', ['$scope','$modal', 'Authentication', 'MatchSchedule', 'ScoreSheet',  function ($scope, $modal, Authentication, matchSchedule, scoreSheet) {
+angular.module('koora').controller('MyPredictionsController', ['$scope','$modal', 'Authentication', 'MatchSchedule', 'ScoreSheet',  function ($scope, $modal, Authentication, matchSchedule, scoreSheet) {
 		//$scope.global = Global;
 		$scope.authentication = Authentication;
 
@@ -155,25 +155,32 @@ angular.module('koora').controller('IndexController', ['$scope','$modal', 'Authe
 	    	}
 		}
 
-		scoreSheet.get().success(function(response){
-			var savedScores = _.object(_.map(response.scores, function(scoreSheet){
-				return [scoreSheet.matchId, {team1Score: scoreSheet.team1Score, team2Score: scoreSheet.team2Score }];
-			}));
-			// console.log('savedscores,', savedScores)
-			_.each($scope.matchSchedule, function(group){
-	    		_.each(group.matches, function(match){
-	    			console.log('savedscore', savedScores[match.matchId]);
-	    			match.team1Score = (savedScores[match.matchId]|| {}).team1Score;
-	    			match.team2Score = (savedScores[match.matchId]|| {}).team2Score;
-	    		});
-	    	});
+		if(Authentication.user){
 
-	    	$scope.$root.finalist1 = response.extraPredictions.finalist1;
-	    	$scope.$root.finalist2 = response.extraPredictions.finalist2;
-	    	$scope.$root.winner = response.extraPredictions.winner;
-			console.log('returned', response);
-		}).error(function(data, status){
-			//console.log('error', data, status)
-		});
+			scoreSheet.get().success(function(response){
+				if(!response.scores)
+					return;
+
+				var savedScores = _.object(_.map(response.scores, function(scoreSheet){
+					return [scoreSheet.matchId, {team1Score: scoreSheet.team1Score, team2Score: scoreSheet.team2Score }];
+				}));
+				// console.log('savedscores,', savedScores)
+				_.each($scope.matchSchedule, function(group){
+		    		_.each(group.matches, function(match){
+		    			console.log('savedscore', savedScores[match.matchId]);
+		    			match.team1Score = (savedScores[match.matchId]|| {}).team1Score;
+		    			match.team2Score = (savedScores[match.matchId]|| {}).team2Score;
+		    		});
+		    	});
+
+		    	$scope.$root.finalist1 = response.extraPredictions.finalist1;
+		    	$scope.$root.finalist2 = response.extraPredictions.finalist2;
+		    	$scope.$root.winner = response.extraPredictions.winner;
+				console.log('returned', response);
+			}).error(function(data, status){
+				alert("Error loading your predictions");
+				//console.log('error', data, status)
+			});	
+		}
 	}
 ]);
