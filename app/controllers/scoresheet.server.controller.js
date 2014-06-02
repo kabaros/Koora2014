@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
+	User = mongoose.model('User'),
 	ScoreSheet = mongoose.model('Scoresheet'),
     _ = require('lodash');
 
@@ -23,7 +24,9 @@ exports.create = function(req, res) {
 				message: err
 			});
 		} else {
-			res.jsonp(returnedScoresheet);
+			User.update({_id: req.user._id}, {predictions: req.body.extraPredictions}, function(){
+				res.jsonp(returnedScoresheet);
+			});
 		}
 	};
 	

@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('koora').controller('PoolViewController', ['$scope', 'Authentication', '$stateParams', '$location', 'Pool',
-	function($scope, Authentication, $stateParams, $location, Pool) {
+angular.module('koora').controller('PoolViewController', ['$scope', 'Authentication', '$stateParams', '$location', 'Pool', 'MatchSchedule',
+	function($scope, Authentication, $stateParams, $location, Pool, matchSchedule) {
 
 		var $poolScope = $scope;
-
 		$scope.authentication = Authentication;
-
+		$scope.teamsNames = matchSchedule.teamsNames;
+		
 		var loadPool = function(pool, status){
 			console.log("succes", pool, status);
 

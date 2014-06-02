@@ -1,0 +1,34 @@
+<div class="standings-table" data-ng-controller="PoolViewController">
+	<div>
+		<table class="table table-striped">
+    		<th>
+    			<td></td>
+    			<td>Points</td>
+    			<td>Predicted Final</td>
+    			<td>Predicted Winner</td>
+    		</th>
+    		<tr data-ng-repeat="member in pool.members | orderBy:members.pts">
+    			<td>
+    				
+    			</td>
+                <td>{{member.displayName}}</td>
+    			<td>0</td>
+                <td>
+                    <div data-ng-show="member.predictions.winner">
+                        <img ng-attr-title="{{teamsNames[member.predictions.finalist1]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist1.toLowerCase()}}.png" />
+                          
+                        <img title="{{teamsNames[member.predictions.finalist2]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist2.toLowerCase()}}.png" />
+                    </div>
+                </td>
+    			<td>
+                    <div data-ng-show="member.predictions.winner">
+                        <img title="{{teamsNames[member.predictions.winner]}}" data-ng-src="/assets/flags/{{member.predictions.winner.toLowerCase()}}.png" />
+                    </div>
+                    <div data-ng-show="!member.predictions.winner">
+                        <small>Still haven't entered their predictions</small>
+                    </div>
+                </td>
+    		</tr>
+    	</table>
+	</div>
+</div>

@@ -75,6 +75,11 @@ var UserSchema = new Schema({
 		password: String,
 		isAdmin: Boolean
 	}],
+	predictions: {
+		finalist1: String,
+		finalist2: String,
+		winner: String
+	},
 	isPoolAdmin: Boolean,
 	updated: {
 		type: Date
