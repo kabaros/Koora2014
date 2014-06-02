@@ -1,12 +1,63 @@
-<div class="maincontent" data-ng-controller="MyPoolsController">
+<div data-ng-controller="MyPoolsController">
 
-	<h2>My POOLS</h2>
-	<select ng-model="selectedPool" ng-hide="!authentication.user || myPools.length === 0">
-		<option selected>Select a pool</option>
-	</select>
-	<div ng-show="!authentication.user">
-		<div>
-		You need to <a href="#!/signin">Login</a> in order to start a new pool or join an existing one.
+	<h2>My Groups</h2>
+	<hr/>
+	<div class="row">
+		<div class="col-md-8">
+			<select class="form-control" ng-model="selectedPool" ng-options="pool.displayName for pool in myPools" ng-hide="!authentication.user || myPools.length === 0">
+				<option value="">Select a Group</option>
+			</select>
+			<div ng-show="!authentication.user">
+				You need to <a href="#!/signin">Login</a> in order to start a new Group or join an existing one.
+			</div>
+
+			<div ng-show="!myPools || myPools.length === 0" class="col-md-12">
+				<form class="form-group form-horizontal">
+					<div class="section-header">Start a New Group</div>
+					<div class="row">
+						<div class="col-md-4">
+							<label class="control-label">Name of the Group</label>
+						</div>
+						<div class="col-md-4">
+				    		<input ng-model="poolToSave.displayName" class="form-control" placeholder="my Company's IT department" />
+						</div>
+					</div>
+				</form>
+				<button type="button" data-ng-click="savePool()" class="btn btn-primary">Create a new Group</button>
+			</div>
+			<div ng-show="savedPool">
+				<br/>
+					<div class="alert alert-success">Your group <strong>"{{savedPool.displayName}}"</strong>
+					was successfully Created. <br/><br/>
+					Please share <a href="#!/my-pools/{{savedPool.name}}">the link</a> with your friends to join your group. They will also need this password to be able to join. Password is <strong>{{savedPool.password}}</strong>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="alert alert-warning">
+				<h4>My Groups</h4>
+				<hr/>
+				<div data-ng-show="!myPools || myPools.length === 0">
+					You are not a part of any group
+				</div>
+				<ul data-ng-repeat="pool in myPools">
+					<li>
+						 <span data-ng-show="pool.isAdmin" title="You created this group" class="glyphicon glyphicon-user"></span>
+						 
+						<a href="#!/my-pools/{{pool.name}}">{{pool.displayName}}</a>
+						
+						 <div data-ng-show="pool.isAdmin">Password: 
+						  <strong><span data-ng-show="pool.isAdmin" title="Share this password for people willing to join your group"> {{pool.password}}</span></strong>
+						  <br/>
+						  <small>(Share this password along with the link to your friends to be able to join you)</small>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="alert alert-success"><strong>Groups</strong> are a simple way of getting together with your friends in a sub-competition. For example, you can create a group for your company and invite your colleagues to compete against each other, or within a company, each department could have a different group, and compete within these groups. <br/><br/>
+
+			Also, if your group contains more than 11 players, then it automatically qualifies for the Global competition where you see how your group as a whole compares to the rest of the world.
+			</div>
+		</div>
 	</div>
-	<div ng-show></div>
 </div>

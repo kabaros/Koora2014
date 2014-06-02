@@ -4,7 +4,7 @@ module.exports = {
 	app: {
 		title: 'Koora 2014',
 		description: 'Enjoy the World Cup with your friends',
-		keywords: 'mongodb, express, angularjs, node.js, mongoose, passport'
+		keywords: 'world cup, brazil, pool, competition, predictions, football, england'
 	},
 	port: process.env.PORT || 3000,
 	templateEngine: 'swig',
@@ -31,7 +31,6 @@ module.exports = {
 			'public/assets/css/style.css',
 			'public/assets/css/overwrite.css',
 			'public/assets/css/koora.css',
-			'public/assets/flags/*.*'
 		],
 		js: [
 			'public/config.js',

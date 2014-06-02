@@ -5,18 +5,18 @@
 	<form class="form-horizontal" role="form">
 		<div class="form-group">
 			<label class="col-sm-2 control-label">The final</label>
-	    <div class="col-sm-10">
-	    	<select class="form-control" ng-model="$root.finalist1" ng-options=" k as v for (k, v) in qualifiers">
-				<option value="">choose team</option>
-			</select>
-			<div class="vs">vs</div>
-			 <select class="form-control" ng-model="$root.finalist2" ng-options="k as v  for (k, v) in qualifiers">
-				<option value="">choose team</option>
-			</select>
-			<div class="alert alert-warning" data-ng-show="finalist1 && finalist1 === finalist2">
-				  <strong>Your finalists can't be the same (obviously!)</strong>
-				</div>
-	    </div>
+	    	<div class="col-sm-10">
+		    	<select class="form-control" ng-model="$root.finalist1" ng-options=" k as v for (k, v) in qualifiers">
+					<option value="">choose team</option>
+				</select>
+				<div class="vs">vs</div>
+				 <select class="form-control" ng-model="$root.finalist2" ng-options="k as v  for (k, v) in qualifiers">
+					<option value="">choose team</option>
+				</select>
+				<div class="alert alert-warning" data-ng-show="finalist1 && finalist1 === finalist2">
+					  <strong>Your finalists can't be the same (obviously!)</strong>
+					</div>
+	    	</div>
 	  </div>
 
 	  <div class="form-group">

@@ -69,6 +69,13 @@ var UserSchema = new Schema({
 		}],
 		default: ['user']
 	},
+	pools: [{
+		name: String,
+		displayName: String,
+		password: String,
+		isAdmin: Boolean
+	}],
+	isPoolAdmin: Boolean,
 	updated: {
 		type: Date
 	},

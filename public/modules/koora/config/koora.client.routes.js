@@ -12,6 +12,10 @@ angular.module('koora').config(['$stateProvider',
 		state('my-pools', {
 			url: '/my-pools',
 			templateUrl: 'modules/koora/views/my-pools.client.view.html'
+		}).
+		state('view-pool', {
+			url: '/my-pools/:name',
+			templateUrl: 'modules/koora/views/pools/view-pool.client.view.html'
 		});
 	}
 ])

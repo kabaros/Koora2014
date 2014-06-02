@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
  */
 var ScoresheetSchema = new Schema({
 	user: {
-		type: String
+		type: Schema.ObjectId,
+		ref: 'User'
 	},
 	scores: [{
 		matchId: Number,

@@ -1,0 +1,53 @@
+<section ng-controller="PoolViewController" data-ng-init="initPool()">
+	<div class="row" ng-show="authentication.user && !groupNotFound">
+		<div class="col-md-8">
+			<h2 class="page-header">{{pool.displayName}}</h2>
+
+			<div data-ng-show="isMemberOfGroup" data-ng-include="'/modules/koora/views/pools/standings.html'">
+			</div>
+			<div data-ng-show="!isMemberOfGroup" class="alert alert-warning col-md-12">
+				Your are not member of this group.<br/><br/>
+				If you were invited to join "<strong>{{pool.displayName}}</strong>" group, then please provide the password you were given.
+				<br/><br/>
+				<div class="row">
+					<div class="col-md-12">
+						<form class="form-inline" role="form">
+							 <div class="form-group">
+							 	<label class="sr-only" for="group-password">Password</label>
+								<input data-ng-disabled="joinedSuccess" ng-model="joinPassword" id="group-password" class="form-control" placeholder="password" />
+							</div>
+							
+							<button data-ng-disabled="joinedSuccess" data-ng-click="joinPool()" class="btn btn-primary form-control">Join this group</button>
+						</form>
+					</div>
+				</div>
+				<div class="row" data-ng-show="joinError">
+					<div class="col-md-12">
+						<div class="alert alert-danger">
+							{{joinError}}
+						</div>
+					</div>
+				</div>
+
+				<div class="row" data-ng-show="joinedSuccess">
+					<div class="col-md-12">
+						<div class="alert alert-success">
+							You successfully joined this group. Go to <a href="#!/my-pools">My Groups</a> to see the standings and more.
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+	<div ng-show="!authentication.user" class="col-md-6">
+		<div class="alert alert-warning">Please <a href="#!/signin">login</a> (or <a href="#!/signup">register</a> if you don't have an account) then come back to the same page and you will be able to view the Group or join it.
+		</div>
+	</div>
+
+	<div ng-show="groupNotFound" class="col-md-6">
+		<div class="alert alert-danger">This group was not found. You can go to <a href="#!/my-pools">My Groups</a> and create a new Group with this name, or double check the url of the group if you were coming to join an existing one.
+		</div>
+	</div>
+</section>

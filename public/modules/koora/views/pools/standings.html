@@ -1,0 +1,19 @@
+<div class="standings-table" data-ng-controller="PoolViewController">
+	<div>
+		<table class="table table-striped">
+    		<th>
+    			<td></td>
+    			<td>Points</td>
+    			<td>Predicted Final</td>
+    			<td>Predicted Winner</td>
+    		</th>
+    		<tr data-ng-repeat="member in pool.members | orderBy:members.pts">
+    			<td>
+    				
+    			</td>
+    			<td>{{member.displayName}}</td>
+    			<td>0</td>
+    		</tr>
+    	</table>
+	</div>
+</div>

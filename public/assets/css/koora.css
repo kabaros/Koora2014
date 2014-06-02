@@ -7,16 +7,29 @@
 	border: 1px solid #d4d4d4;
 }
 
-.well-success, .well-success:hover {
-	background-color: #007600;
+.navbar .nav .danger > a, .navbar .nav .danger > a:hover {
+	background-color: rgba(254, 213, 0, 0.95);
+	color: #000;
 }
 
-.well-primary, .well-primary:hover {
-	background-color: #3200fe;
+.well-success, .well-success:hover {
+	background-color: #7cbb00;
 }
+
+.navbar .nav .my-predictions {
+	background-image: url('../_images/brazil_inner_flag.png');
+}
+
+.navbar .nav .primary.my-predictions > a,
+.navbar .nav .primary.my-predictions > a:hover,
+.navbar .nav .primary.my-predictions > a:focus {
+	
+	background-color: #f7f409;
+}
+
 
 .well-warning, .well-warning:hover {
-	background-color: #fefe00;
+	background-color: #FED500;
 	color: #000;
 }
 
@@ -65,8 +78,17 @@ img.standing-flag {
 		position: fixed;
 	}
 }
+.section-header {
+	background-color: #f9f9f9;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	padding: 10px;
+	margin-bottom: 10px;
+	font-size: 1.2em;
+	
+}
 
- .match-date{
+ .match-date {
 	background-color: #f9f9f9;
 	border-bottom: 1px solid #ddd;
 	border-top: 1px solid #ddd;
@@ -109,4 +131,29 @@ img.standing-flag {
 }
 .finalists-prediction select {
 	margin-bottom: 5px;
+}
+
+@media (min-width: 992px){
+	.countdown {
+		display: block !important;
+		visibility: visible !important;
+	}
+}
+.countdown .number {
+	height: 200px;
+	text-align: center;
+	padding-top: 80px;
+	font-size: 4em;
+}
+.countdown .timeunit {
+	font-size: 2.2em;
+	text-align: center;
+}
+.countdown .register{
+	height: 200px;
+	text-align: center;
+	padding-top: 35px;
+	font-size: 2.1em;
+	line-height: 2.2em;
+	vertical-align: middle;
 }
