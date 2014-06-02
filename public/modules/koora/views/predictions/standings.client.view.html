@@ -31,7 +31,7 @@
 				    		</tr>
 				    		<tr data-ng-repeat="standing in standings[selectedGroup.group] | orderBy:standing.pts">
 				    			<td>
-				    				<img class="standing-flag" data-ng-src="/assets/flags/{{standing.team}}.png" />
+				    				<img class="standing-flag" data-ng-src="/assets/flags/{{standing.team.toLowerCase()}}.png" />
 				    			</td>
 				    			<td>{{standing.team}}</td>
 				    			<td>{{standing.played}}</td>

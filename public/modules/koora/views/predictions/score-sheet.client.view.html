@@ -4,11 +4,11 @@
 		<div>
     		<div>
     			<div class="team">
-    				<img data-ng-src="/assets/flags/{{match.team1}}.png" /> {{teamsNames[match.team1]}}
+    				<img data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" /> {{teamsNames[match.team1]}}
     			</div>
     			<div class="vs">vs</div>
     			<div class="team">
-    				<img data-ng-src="/assets/flags/{{match.team2}}.png" />
+    				<img data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
     				{{teamsNames[match.team2]}}
     			</div>
     		</div>
