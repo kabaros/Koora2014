@@ -1,9 +1,12 @@
 <section data-ng-controller="HomeController">
 	<div class="maincontent">
 
+		<div class="row how-it-works" data-ng-include="'/modules/core/views/how-it-works.client.view.html'">
+		</div>
+
 		<div class="countdown row hidden">
 			<h3 class="heading-success"><span class="btn btn-success btn-lg"><i class="glyphicon glyphicon-exclamation-sign"></i></span>&nbsp;&nbsp;World Cup Countdown</h3>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<div class="number alert alert-success">
 						<div>{{remainingTime.days}}</div>
 				</div>
@@ -11,7 +14,7 @@
 						days	
 				</div>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<div class="number alert alert-success">
 						<div>{{remainingTime.hours}}</div>
 				</div>
@@ -19,7 +22,7 @@
 						hours	
 				</div>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<div class="number alert alert-success">
 						<div>{{remainingTime.minutes}}</div>
 				</div>
@@ -27,43 +30,13 @@
 						minutes
 				</div>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<div class="number alert alert-success">
 						<div>{{remainingTime.seconds}}</div>
 				</div>
 				<div class="alert alert-warning timeunit">
 						seconds
 				</div>
-			</div>
-			<div class="col-md-4">
-				<div class=" alert alert-danger register">
-						Register now. <br/> Don't miss the fun!
-				</div>
-			</div>
-		</div>
-		<section class="how-it-works" data-ng-include="'/modules/core/views/how-it-works.client.view.html'">
-		</section>
-		<div class="jumbotron text-center">
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12">
-					<h1>Koora 2014</h1>
-				</div>
-			</div>
-			<br>
-			<div class="row">
-				<p class="lead">
-					
-					<ol>
-						<li>Register</li>
-						<li>Predict</li>
-						<li>Enjoy!</li>
-					</ol>
-				</p>
-			</div>
-			<div class="row">
-				<p ng-show="!authentication.user">
-					<a class="btn btn-primary btn-lg" href="#!/signup">Register now</a> or <a href="#!/signin">Login</a> if you already have an account.
-				</p>
 			</div>
 		</div>
 	</div>	

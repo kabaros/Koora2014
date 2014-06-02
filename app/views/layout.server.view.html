@@ -48,6 +48,10 @@
 	<link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
 </head>
 
+{% if process.env.NODE_ENV === 'staging' %}
+<div style="position: fixed; top: 200px; right: -20px;  z-index: 10;-webkit-transform: rotate(90deg);color: white;background-color: red;padding: 15px;font-size: 16px;">Test site.</div>
+{% endif %}
+
 <body class="ng-cloak">
 
 	<header data-ng-include="'/modules/core/views/header.client.view.html'"></header>
