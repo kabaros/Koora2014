@@ -85,6 +85,38 @@
 							</li>
 						</ul>
 					</ul>
+					<select data-ng-change="goTo(selectedPage)" data-ng-model="selectedPage">
+						<option uiRoute value="">Home</option>
+						<option ui-route="/my-predictions"
+						 ng-selected="$uiRoute" value="my-predictions">
+							My Predictions
+						</option>
+						<option ui-route="/my-pools"
+						 ng-selected="$uiRoute" value="my-pools">
+							My Groups
+						</option>
+						<option ui-route="/signup"
+						 ng-selected="$uiRoute" value="signup" ng-if="!authentication.user">
+							Register
+						</option>
+						<option ui-route="/signin"
+						 ng-selected="$uiRoute" value="signin" ng-if="!authentication.user">
+							Login
+						</option>
+
+						<option ui-route="/settings/profile"
+						 ng-selected="$uiRoute" value="settings/profile" ng-if="authentication.user">Edit Profile</option>
+
+						<option ui-route="/settings/accounts"
+						 ng-selected="$uiRoute" value="settings/accounts" ng-if="authentication.user">Manage Social Accounts</option>
+
+						<option ui-route="/settings/password"
+						 ng-selected="$uiRoute"  value="settings/password" ng-if="authentication.user.provider === 'local'">Change Password</option>
+
+						<option ui-route="/auth/signout"
+						 ng-selected="$uiRoute"  value="auth/signout" ng-if="authentication.user">Signout</option>
+						
+					</select>
 				</nav>
 			</div>
 			<!-- end menu -->

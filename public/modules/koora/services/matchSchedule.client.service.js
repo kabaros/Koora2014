@@ -311,7 +311,7 @@ angular.module('koora').service('MatchSchedule', [
 	    	"HON": "Honduras",
 
 	    	"ARG": "Argentina",
-	    	"BIH": "Bosnia-Herzegovina",
+	    	"BIH": "Bosnia",
 	    	"IRN": "Iran",
 	    	"NGA": "Nigeria",
 
@@ -323,7 +323,7 @@ angular.module('koora').service('MatchSchedule', [
 	    	"BEL": "Belgium",
 	    	"ALG": "Algeria",
 	    	"RUS": "Russia",
-	    	"KOR": "Korea Republic"
+	    	"KOR": "Korea"
 	    }
 	}
 ]);
