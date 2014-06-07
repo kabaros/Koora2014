@@ -18,11 +18,19 @@ var PoolSchema = new Schema({
 		type: Schema.ObjectId,
 		ref: 'User'
 	},
-	displayName: String,
+	displayName: {
+		type: String,
+		trim: true
+	},
 	password: String,
 	name: {
 		type: String,
+		trim: true,
 		index: { unique: true }
+	},
+	defaultPool: {
+		type: Boolean,
+		default: false
 	},
 	members: [{
 		type: Schema.ObjectId,

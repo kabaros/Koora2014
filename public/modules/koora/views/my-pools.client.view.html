@@ -1,5 +1,5 @@
 <div data-ng-controller="MyPoolsController">
-	
+
 	<h2>My Standings</h2>
 	<hr/>
 	<div class="row" data-ng-show="!authentication.user">
@@ -11,54 +11,93 @@
 	</div>
 	<div class="row" data-ng-show="authentication.user">
 		<div class="col-md-8">
-			<select class="form-control" ng-model="selectedPool" ng-options="pool.displayName for pool in myPools" ng-hide="!authentication.user || myPools.length === 0">
-				<option value="">Select a Group</option>
+			<select class="form-control" ng-model="selectedPool" ng-options="pool.displayName for pool in myPools" ng-hide="!authentication.user || myPools.length === 0">				
+				<option value="">Select</option>
 			</select>
-			
 
-			<div ng-show="!myPools || myPools.length === 0" class="col-md-12">
-				<form class="form-group form-horizontal">
-					<div class="section-header">Start a New Group</div>
-					<div class="row">
-						<div class="col-md-4">
-							<label class="control-label">Name of the Group</label>
-						</div>
-						<div class="col-md-4">
-				    		<input ng-model="poolToSave.displayName" class="form-control" placeholder="my Company's IT department" />
-						</div>
-					</div>
-				</form>
-				<button type="button" data-ng-click="savePool()" class="btn btn-primary">Create a new Group</button>
+			<div class="row">
+				<table class="table table-striped">
+		    		<th>
+		    			<td></td>
+		    			<td>Points</td>
+		    			<td>Predicted Final</td>
+		    			<td>Predicted Winner</td>
+		    		</th>
+		    		<tr data-ng-repeat="member in pool.members | orderBy:members.pts">
+		    			<td>
+		    				
+		    			</td>
+		                <td>{{member.displayName}}</td>
+		    			<td>0</td>
+		                <td>
+		                    <div data-ng-show="member.predictions.winner">
+		                        <img ng-attr-title="{{teamsNames[member.predictions.finalist1]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist1.toLowerCase()}}.png" />
+		                          
+		                        <img title="{{teamsNames[member.predictions.finalist2]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist2.toLowerCase()}}.png" />
+		                    </div>
+		                </td>
+		    			<td>
+		                    <div data-ng-show="member.predictions.winner">
+		                        <img title="{{teamsNames[member.predictions.winner]}}" data-ng-src="/assets/flags/{{member.predictions.winner.toLowerCase()}}.png" />
+		                    </div>
+		                    <div data-ng-show="!member.predictions.winner">
+		                        <small>Still haven't entered their predictions</small>
+		                    </div>
+		                </td>
+		    		</tr>
+		    	</table>
 			</div>
-			<div ng-show="savedPool">
-				<br/>
-					<div class="alert alert-success">Your group <strong>"{{savedPool.displayName}}"</strong>
-					was successfully Created. <br/><br/>
-					Please share <a href="#!/my-pools/{{savedPool.name}}">the link</a> with your friends to join your group. They will also need this password to be able to join. Password is <strong>{{savedPool.password}}</strong>
-				</div>
-			</div>
+			
 		</div>
 		<div class="col-md-4">
-			<div class="alert alert-warning">
-				<h4>My Groups</h4>
-				<hr/>
-				<div data-ng-show="!myPools || myPools.length === 0">
-					You are not a part of any group
+			<div class="row">
+				<div class="alert alert-warning">
+					<h4>My Groups</h4>
+					<hr/>
+					<div data-ng-show="!myPools || myPools.length === 0">
+						You are not a part of any group
+					</div>
+					<ul data-ng-repeat="pool in myPools">
+						<li>
+							 <span data-ng-show="pool.isAdmin" title="You created this group" class="glyphicon glyphicon-user"></span>
+							 
+							<a href="#!/my-pools/{{pool.name}}">{{pool.displayName}}</a>
+							
+							 <div data-ng-show="pool.isAdmin">Password: 
+							  <strong><span data-ng-show="pool.isAdmin" title="Share this password for people willing to join your group"> {{pool.password}}</span></strong>
+							  <br/>
+							  <small>(Share this password along with the link of the group <a href="#!/my-pools/{{pool.name}}">{{baseUrl + "/" + pool.name}}</a> to your friends to be able to join you)</small>
+							</div>
+						</li>
+					</ul>
 				</div>
-				<ul data-ng-repeat="pool in myPools">
-					<li>
-						 <span data-ng-show="pool.isAdmin" title="You created this group" class="glyphicon glyphicon-user"></span>
-						 
-						<a href="#!/my-pools/{{pool.name}}">{{pool.displayName}}</a>
-						
-						 <div data-ng-show="pool.isAdmin">Password: 
-						  <strong><span data-ng-show="pool.isAdmin" title="Share this password for people willing to join your group"> {{pool.password}}</span></strong>
-						  <br/>
-						  <small>(Share this password along with the link to your friends to be able to join you)</small>
-						</div>
-					</li>
-				</ul>
 			</div>
+			<div class="row">
+				
+					<div ng-show="!isPoolAdmin">
+						<form class="form-group">
+							<div class="section-header">Start a New Group</div>
+							
+								<div>
+									<label class="control-label">Name of the Group</label>
+								</div>
+								<div>
+						    		<input ng-model="poolToSave.displayName" class="form-control" placeholder="my Company's IT department" />
+								</div>
+							
+						</form>
+						<button type="button" data-ng-click="savePool()" class="btn btn-primary">Create a new Group</button>
+					
+				</div>
+				<div ng-show="savedPool">
+					<br/>
+						<div class="alert alert-success">Your group <strong>"{{savedPool.displayName}}"</strong>
+						was successfully Created. <br/><br/>
+						Please share <a href="#!/my-pools/{{savedPool.name}}">the link</a> with your friends to join your group. They will also need this password to be able to join. Password is <strong>{{savedPool.password}}</strong>
+					</div>
+				</div>
+			</div>
+
 			<div class="alert alert-success"><strong>Groups</strong> are a simple way of getting together with your friends in a sub-competition. For example, you can create a group for your company and invite your colleagues to compete against each other, or within a company, each department could have a different group, and compete within these groups. <br/><br/>
 
 			Also, if your group contains more than 11 players, then it automatically qualifies for the Global competition where you see how your group as a whole compares to the rest of the world.

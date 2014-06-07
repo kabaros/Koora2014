@@ -6,6 +6,8 @@
 var mongoose = require('mongoose'),
 	passport = require('passport'),
 	User = mongoose.model('User'),
+	Pool = mongoose.model('Pool'),
+	when = require('when'),
 	Scoresheet = mongoose.model('Scoresheet'),
 	_ = require('lodash');
 
@@ -33,6 +35,43 @@ var getErrorMessage = function(err) {
 	return message;
 };
 
+
+var getDefaultPool = function(){
+	var deferred = when.defer();
+	
+	Pool.findOne({defaultPool: true}, {password: 0, admin: 0, _id: 0, createdOn: 0}, function(err, pool){
+		return deferred.resolve(pool);
+	});
+
+	return deferred.promise;
+};
+
+var updatePoolWithMember = function(user, pool) {
+	var deferred = when.defer();
+	
+	Pool.update({name: pool.name}, {$push: {
+			members: user._id
+		}}, function(err){
+			if (err) {
+				console.log("error when adding member to default pool");
+				return deferred.reject();
+
+			} else  {
+				User.update({_id: user._id}, {$push: {pools: {
+					displayName: pool.displayName,
+					name: pool.name
+				}}}, function(err){
+					if(err)
+						console.log("error while saving pool to user", err);
+					else 
+						return deferred.resolve(user)		
+				})
+				
+			};
+	});
+
+	return deferred.promise;	
+}
 /**
  * Signup
  */
@@ -59,27 +98,39 @@ exports.signup = function(req, res) {
 			user.password = undefined;
 			user.salt = undefined;
 
-			var scoreSheet = new Scoresheet({
-				user : user._id,
-				extraPredictions: req.body.predictions
-			});
+			var _defaultPool;
 
-			scoreSheet.save(function(err){
-				if (err) {
-					return res.send(400, {
-						message: "error saving scoreSheet for user"
-					});
-				} else {
-					req.login(user, function(err) {
-						if (err) {
-							res.send(400, err);
-						} else {
-							res.jsonp(user);
-						}
-					});
-				}
-			});
-			
+			getDefaultPool().then(function(defaultPool){
+				_defaultPool = defaultPool;
+				return updatePoolWithMember(user, defaultPool);
+			}).then(function(user){
+				var scoreSheet = new Scoresheet({
+					user : user._id,
+					extraPredictions: user.predictions
+				});
+
+				console.log("about to save default scoresheet", scoreSheet);
+
+				scoreSheet.save(function(err){
+					if (err) {
+						return res.send(400, {
+							message: "error saving scoreSheet for user"
+						});
+					} else {
+						req.login(user, function(err) {
+							if (err) {
+								res.send(400, err);
+							} else {
+								user.pools = [{
+									name: _defaultPool.name,
+									displayName: _defaultPool.displayName
+								}];
+								res.jsonp(user);
+							}
+						});
+					}
+				});
+			});	
 		}
 	});
 };
