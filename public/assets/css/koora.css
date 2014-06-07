@@ -14,7 +14,7 @@
 	display: inline-block;
 	width: 32px;
 	height: 32px;
-	background-image: url('../assets/_images/loader.gif');
+	background-image: url('../_images/loader.gif');
 }
 .navbar {
 	border: 1px solid #d4d4d4;
@@ -30,7 +30,7 @@
 }
 
 .navbar .nav .my-predictions {
-	background-image: url('../assets/_images/brazil_inner_flag.png');
+	background-image: url('../_images/brazil_inner_flag.png');
 }
 
 .navbar .nav .primary.my-predictions > a,

@@ -1200,11 +1200,11 @@ a.commentlink {
 
 .social_small li:hover {background-position: 0 -32px;}
 
-.facebook {background: url(../assets/img/icons/social/fb.png) no-repeat;}
-.googleplus {background: url(../assets/img/icons/social/google.png) no-repeat;}
-.dribbble {background: url(../assets/img/icons/social/dribble.png) no-repeat;}
-.flickr {background: url(../assets/img/icons/social/flickr.png) no-repeat;}
-.twitt {background: url(../assets/img/icons/social/twitter.png) no-repeat;}
+.facebook {background: url(../img/icons/social/fb.png) no-repeat;}
+.googleplus {background: url(../img/icons/social/google.png) no-repeat;}
+.dribbble {background: url(../img/icons/social/dribble.png) no-repeat;}
+.flickr {background: url(../img/icons/social/flickr.png) no-repeat;}
+.twitt {background: url(../img/icons/social/twitter.png) no-repeat;}
 
 
 /* twitter */
