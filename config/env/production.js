@@ -5,17 +5,17 @@ module.exports = {
 	assets: {
 		lib: {
 			css: [
-				'public/lib/bootstrap/dist/css/bootstrap.min.css',
+				'//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css',
 				'public/lib/bootstrap/dist/css/bootstrap-theme.min.css',
 			],
 			js: [
-				'public/lib/angular/angular.min.js',
+				'//ajax.googleapis.com/ajax/libs/angularjs/1.2.17/angular.min.js',
 				'public/lib/angular-resource/angular-resource.min.js',
 				'public/lib/angular-animate/angular-animate.min.js',
 				'public/lib/angular-ui-router/release/angular-ui-router.min.js',
 				'public/lib/angular-ui-utils/ui-utils.min.js',
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
-				'public/lib/underscore/underscore.js'
+				'//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js'
 			]
 		},
 
