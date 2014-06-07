@@ -106,7 +106,7 @@ exports.signup = function(req, res) {
 			}).then(function(user){
 				var scoreSheet = new Scoresheet({
 					user : user._id,
-					extraPredictions: user.predictions
+					extraPredictions: req.body.predictions
 				});
 
 				console.log("about to save default scoresheet", scoreSheet);

@@ -17,6 +17,13 @@ exports.create = function(req, res) {
 
 	var scoreSheet = _.extend({}, req.body, {user: req.user._id})
 
+
+	var missingPredictions = _.where(scoreSheet.scores, function(match){
+		return _.isUndefined(match.team1Score) || _.isUndefined(match.team2Score);
+	}).length;
+
+	console.log("missing predictions: %s", missingPredictions);
+
 	var func = function(err, returnedScoresheet) {
 		if (err) {
 			console.log('error on saving scoreSheet', err);
@@ -24,7 +31,10 @@ exports.create = function(req, res) {
 				message: err
 			});
 		} else {
-			User.update({_id: req.user._id}, {predictions: req.body.extraPredictions}, function(){
+			User.update({_id: req.user._id}, {
+				predictions: req.body.extraPredictions,
+				missingPredictions: missingPredictions
+			}, function(){
 				res.jsonp(returnedScoresheet);
 			});
 		}

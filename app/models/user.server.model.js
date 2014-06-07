@@ -84,11 +84,23 @@ var UserSchema = new Schema({
 	updated: {
 		type: Date
 	},
+	missingPredictions: {
+		type: Number,
+		default: 48
+	},
+	points: {
+		type: Number,
+		default: 0
+	},
 	created: {
 		type: Date,
 		default: Date.now
 	}
 });
+
+UserSchema.path('firstName').validate(function (v) {
+  return v.length < 10;
+}, 'User name must be less than 10 characters'); 
 
 /**
  * Hook a pre save method to hash the password
