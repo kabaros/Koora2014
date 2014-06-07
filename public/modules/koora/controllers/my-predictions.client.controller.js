@@ -151,7 +151,7 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 						setTimeout(function(){
 							$scope.savingInProgress = false;
 							console.log("saved for real", response);
-							$modal.open({template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved!</h3></div><div class="modal-body">Now sit back, relax and enjoy the fun.<br/><br/>Your predictions will be locked for changes two hours before the opening game.</div>'});	
+							$modal.open({template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved</h3></div><div class="modal-body text-center"> Make sure to save all your predictions before the start of the tournament. <br/><br/>Changes will be locked two hours before the opening game. <br/><br/>Good luck!</div>'});	
 						}, 1000);
 					}).error(function(data, status){
 						$scope.savingInProgress = false;
