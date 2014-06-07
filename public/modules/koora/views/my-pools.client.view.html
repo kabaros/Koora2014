@@ -11,41 +11,61 @@
 	</div>
 	<div class="row" data-ng-show="authentication.user">
 		<div class="col-md-8">
-			<select class="form-control" ng-model="selectedPool" ng-options="pool.displayName for pool in myPools" ng-hide="!authentication.user || myPools.length === 0">				
-				<option value="">Select</option>
+			<select class="form-control" ng-change="goTo(selectedPool.name)" ng-model="selectedPool" ng-options="pool.displayName for pool in myPools" ng-hide="!authentication.user || myPools.length === 0">				
+				
 			</select>
 
+			<div class="row" ng-show="groupByName">
+				<div ng-show="!groupFound" class="row">
+					<br>
+					<div class="col-md-offset-3 col-md-6">
+						<div class="alert alert-danger">A group with the name "<strong>{{groupNotFoundName}}</strong>" was not found. Make sure that you have entered the correct url.
+						</div>
+					</div>
+				</div>
+				<div data-ng-show="groupFound && !isMemberOfGroup" class="row">
+					<br>
+					<div class="alert alert-warning col-md-10 col-md-offset-1">
+						Your are not member of this group.<br/><br/>
+						If you were invited to join "<strong>{{poolToJoin.displayName}}</strong>" group, then please provide the password you were given.
+						<br/><br/>
+						<div class="row">
+							<div class="col-md-12">
+								<form class="form-inline" role="form">
+									 <div class="form-group">
+									 	<label class="sr-only" for="group-password">Password</label>
+										<input data-ng-disabled="joinedSuccess" ng-model="joinPassword" id="group-password" class="form-control" placeholder="password" />
+									</div>
+									
+									<button data-ng-disabled="joinedSuccess" data-ng-click="joinPool()" class="btn btn-primary form-control">Join this group</button>
+								</form>
+							</div>
+						</div>
+						<div class="row" data-ng-show="joinError">
+							<div class="col-md-12">
+								<div class="alert alert-danger">
+									{{joinError}}
+								</div>
+							</div>
+						</div>
+
+						<div class="row" data-ng-show="joinedSuccess">
+							<div class="col-md-12">
+								<div class="alert alert-success">
+									You successfully joined this group. Go to <a href="#!/my-pools">My Groups</a> to see the standings and more.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+
 			<div class="row">
-				<table class="table table-striped">
-		    		<th>
-		    			<td></td>
-		    			<td>Points</td>
-		    			<td>Predicted Final</td>
-		    			<td>Predicted Winner</td>
-		    		</th>
-		    		<tr data-ng-repeat="member in pool.members | orderBy:members.pts">
-		    			<td>
-		    				
-		    			</td>
-		                <td>{{member.displayName}}</td>
-		    			<td>0</td>
-		                <td>
-		                    <div data-ng-show="member.predictions.winner">
-		                        <img ng-attr-title="{{teamsNames[member.predictions.finalist1]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist1.toLowerCase()}}.png" />
-		                          
-		                        <img title="{{teamsNames[member.predictions.finalist2]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist2.toLowerCase()}}.png" />
-		                    </div>
-		                </td>
-		    			<td>
-		                    <div data-ng-show="member.predictions.winner">
-		                        <img title="{{teamsNames[member.predictions.winner]}}" data-ng-src="/assets/flags/{{member.predictions.winner.toLowerCase()}}.png" />
-		                    </div>
-		                    <div data-ng-show="!member.predictions.winner">
-		                        <small>Still haven't entered their predictions</small>
-		                    </div>
-		                </td>
-		    		</tr>
-		    	</table>
+				<br/>
+				<div data-ng-show="isMemberOfGroup && groupFound" data-ng-include="'/modules/koora/views/pools/pool-standings.html'">
+				</div>
 			</div>
 			
 		</div>
@@ -100,7 +120,7 @@
 
 			<div class="alert alert-success"><strong>Groups</strong> are a simple way of getting together with your friends in a sub-competition. For example, you can create a group for your company and invite your colleagues to compete against each other, or within a company, each department could have a different group, and compete within these groups. <br/><br/>
 
-			Also, if your group contains more than 11 players, then it automatically qualifies for the Global competition where you see how your group as a whole compares to the rest of the world.
+			Also, if your group contains more than 11 players, then it automatically qualifies for the Teams competition where you see how your group as a whole compares to other groups.
 			</div>
 		</div>
 	</div>

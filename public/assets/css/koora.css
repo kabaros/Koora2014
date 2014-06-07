@@ -1,4 +1,8 @@
 /* Koora stuff */
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+
 .navbar-header a.navbar-brand {
 	font-size: 3em;
 	padding-top: 0.8em;
