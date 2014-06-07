@@ -3,10 +3,19 @@
 	font-size: 3em;
 	padding-top: 0.8em;
 }
+.navbar-header a.navbar-brand img {
+	height: 100%
+}
 .maincontent {
 	padding: 50px 0 20px;
 }
 
+.loader {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	background-image: url('../_images/loader.gif');
+}
 .navbar {
 	border: 1px solid #d4d4d4;
 }

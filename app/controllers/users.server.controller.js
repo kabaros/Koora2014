@@ -6,6 +6,7 @@
 var mongoose = require('mongoose'),
 	passport = require('passport'),
 	User = mongoose.model('User'),
+	Scoresheet = mongoose.model('Scoresheet'),
 	_ = require('lodash');
 
 /**
@@ -58,13 +59,27 @@ exports.signup = function(req, res) {
 			user.password = undefined;
 			user.salt = undefined;
 
-			req.login(user, function(err) {
+			var scoreSheet = new Scoresheet({
+				user : user._id,
+				extraPredictions: req.body.predictions
+			});
+
+			scoreSheet.save(function(err){
 				if (err) {
-					res.send(400, err);
+					return res.send(400, {
+						message: "error saving scoreSheet for user"
+					});
 				} else {
-					res.jsonp(user);
+					req.login(user, function(err) {
+						if (err) {
+							res.send(400, err);
+						} else {
+							res.jsonp(user);
+						}
+					});
 				}
 			});
+			
 		}
 	});
 };

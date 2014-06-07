@@ -1,28 +1,68 @@
-<h2>Group {{selectedGroup.group}}</h2>
-<div data-ng-repeat="match in selectedGroup.matches">
-	<div class="match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}}</div class="match-date">
-	<div class="match-row" data-matchid="{{match.matchid}}">
-		<div>
+<!-- <div class="row">
+     <div class="visible-xs visible-sm"  data-ng-include="'/modules/koora/views/predictions/finalists-prediction.client.view.html'">
+                </div>
+</div> -->
+
+
+            
+<div class="col-md-7">
+    <h1 mean-token="'home-default'"></h1>
+
+    <div class="row">
+        <h2>Group {{selectedGroup.group}}</h2>
+    </div>
+    <div class="row"  data-ng-include="'/modules/koora/views/predictions/groups-selector-strip.client.view.html'">
+        
+    </div>
+    <div class="row">
+        <div data-ng-hide="authentication.user">
+            <div class="alert alert-danger alert-dismissable">
+                <span class="glyphicon glyphicon-exclamation-sign"></span>
+              Please <a class="alert-link" href="#!/signin">login</a> or <a  class="alert-link" href="#!/signup">register</a> first to be able to save your predictions.
+            </div>
+        </div>
+    </div>
+    <div data-ng-repeat="match in selectedGroup.matches">
+    	<div class="match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}}</div class="match-date">
+    	<div class="match-row" data-matchid="{{match.matchid}}">
     		<div>
-    			<div class="team">
-    				<img data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
-                    <span class="hidden-xs hidden-sm">{{teamsNames[match.team1]}}</span>
-    			</div>
-    			<div class="vs">vs</div>
-    			<div class="team">
-    				<img data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
-    				<span class="hidden-xs hidden-sm">{{teamsNames[match.team2]}}</span>
-    			</div>
+        		<div>
+        			<div class="team">
+        				<img data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
+                        <span class="visible-lg">{{teamsNames[match.team1]}}</span>
+        			</div>
+        			<div class="vs">vs</div>
+        			<div class="team">
+        				<img data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
+        				<span class="visible-lg">{{teamsNames[match.team2]}}</span>
+        			</div>
+        		</div>
+        		<div>
+        			<div class="team score">
+        				<input type="text" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
+        			</div>
+        			<div class="vs"></div>
+        			<div class="team score">
+        				<input placeholder="{{match.team2}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
+        			</div>
+        		</div>
     		</div>
-    		<div>
-    			<div class="team score">
-    				<input type="text" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
-    			</div>
-    			<div class="vs"></div>
-    			<div class="team score">
-    				<input placeholder="{{match.team2}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
-    			</div>
-    		</div>
-		</div>
-	</div>
+    	</div>
+    </div>
+    <div class="row"  data-ng-include="'/modules/koora/views/predictions/groups-selector-strip.client.view.html'">
+    </div>
+    <div class="row">
+        <div data-ng-hide="authentication.user">
+            <div class="alert alert-danger alert-dismissable">
+                <span class="glyphicon glyphicon-exclamation-sign"></span>
+               Please <a class="alert-link" href="#!/signin">login</a> or <a  class="alert-link" href="#!/signup">register</a> first to be able to save your predictions.
+            </div>
+        </div>
+    </div>
+
+    
 </div>
+<div class="col-md-5" data-ng-include="'/modules/koora/views/predictions/standings.client.view.html'">
+
+
+    </div>

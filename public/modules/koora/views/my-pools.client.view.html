@@ -1,15 +1,20 @@
 <div data-ng-controller="MyPoolsController">
-
-	<h2>My Groups</h2>
+	
+	<h2>My Standings</h2>
 	<hr/>
-	<div class="row">
+	<div class="row" data-ng-show="!authentication.user">
+		<div class="col-md-8">
+			<div class="alert alert-danger">
+				You need to <a href="#!/signin">Login</a> or <a href="#!/signup">Register</a> in order to view your points and standings.
+			</div>
+		</div>
+	</div>
+	<div class="row" data-ng-show="authentication.user">
 		<div class="col-md-8">
 			<select class="form-control" ng-model="selectedPool" ng-options="pool.displayName for pool in myPools" ng-hide="!authentication.user || myPools.length === 0">
 				<option value="">Select a Group</option>
 			</select>
-			<div ng-show="!authentication.user">
-				You need to <a href="#!/signin">Login</a> in order to start a new Group or join an existing one.
-			</div>
+			
 
 			<div ng-show="!myPools || myPools.length === 0" class="col-md-12">
 				<form class="form-group form-horizontal">

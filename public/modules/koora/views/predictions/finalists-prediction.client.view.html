@@ -1,4 +1,4 @@
-<div class="finalists-prediction" data-ng-show="missingScores.length === 0">
+<div class="finalists-prediction">
 	<div class="match-date">Predict your finalists</div>
 	<br/>
 
@@ -6,11 +6,11 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label">The final</label>
 	    	<div class="col-sm-10">
-		    	<select class="form-control" ng-model="$root.finalist1" ng-options=" k as v for (k, v) in qualifiers">
+		    	<select title="{{!authentication.user && 'Please login first' || 'First Finalist'}}" ng-disabled="!authentication.user" class="form-control" ng-model="$parent.$parent.finalist1" ng-options=" k as v for (k, v) in teamsNames">
 					<option value="">choose team</option>
 				</select>
 				<div class="vs">vs</div>
-				 <select class="form-control" ng-model="$root.finalist2" ng-options="k as v  for (k, v) in qualifiers">
+				 <select title="{{!authentication.user && 'Please login first' || 'Second Finalist'}}"  ng-disabled="!authentication.user" class="form-control" ng-model="$parent.$parent.finalist2" ng-options="k as v  for (k, v) in teamsNames">
 					<option value="">choose team</option>
 				</select>
 				<div class="alert alert-warning" data-ng-show="finalist1 && finalist1 === finalist2">
@@ -22,7 +22,7 @@
 	  <div class="form-group">
 			<label class="col-sm-2 control-label">Winner</label>
 	    <div class="col-sm-10">
-			 <select class="form-control" title="Select the two (different) finalists first then the select a winner" ng-disabled="!finalist1 || !finalist2 ||finalist1 === finalist2"  ng-model="$root.winner" ng-options="qualifiers[v] for v in [finalist1, finalist2]">
+			 <select class="form-control" title="Select the two (different) finalists first then the select a winner" ng-disabled="!finalist1 || !finalist2 ||finalist1 === finalist2"  ng-model="$parent.$parent.winner" ng-options="teamsNames[v] for v in [finalist1, finalist2]">
 				</select>
 	    </div>
 	  </div>

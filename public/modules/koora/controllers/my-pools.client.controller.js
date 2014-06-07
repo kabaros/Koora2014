@@ -3,17 +3,19 @@
 angular.module('koora').controller('MyPoolsController', ['$scope', '$location', 'Authentication', 'Pool',
 	function($scope, $location, Authentication, pool) {
 		$scope.authentication = Authentication;
-		if(!Authentication.user){
-				$location.path('signin');
-				return;
+		// if(!Authentication.user){
+		// 		$location.path('signin');
+		// 		return;
+		// 	}
+
+		if($scope.authentication.user){
+			$scope.myPools = Authentication.user.pools;
+			if($scope.myPools && $scope.myPools.length>0){
+				$scope.selectedPool = $scope.myPools[0];
 			}
-
-		$scope.myPools = Authentication.user.pools;
-		if($scope.myPools && $scope.myPools.length>0){
-			$scope.selectedPool = $scope.myPools[0];
 		}
+		//$scope.poolToSave;
 
-		$scope.poolToSave;
 
 		$scope.savePool = function(){
 			return pool.save($scope.poolToSave)

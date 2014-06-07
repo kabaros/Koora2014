@@ -8,6 +8,7 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    $scope.teamsNames = matchSchedule.teamsNames;
 
 	    $scope.standings = {};
+
 	    _.each($scope.matchSchedule, function(group){
 	    	$scope.standings[group.group] = [];
 	    	_.each(group.matches, function(match){
@@ -116,7 +117,6 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 		$scope.selectedGroup = $scope.matchSchedule[0];
 
 		var saveScoresheet = function(){
-			debugger;
 			return scoreSheet.save($scope.matchSchedule, {
 				qualifiers: _.map($scope.qualifiers, function(v, k){return k;}),
 				finalist1: $scope.finalist1,
@@ -124,6 +124,14 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 				winner: $scope.winner
 			});
 		};
+
+		$scope.$watchCollection('[finalist1, finalist2]',
+			function(newValues, oldValues, scope) {
+				if(oldValues && newValues && !_.contains(newValues, $scope.winner)){
+					$scope.winner = newValues[0] || newValues[1];
+				}
+			});
+
 
 		$scope.changeGroup = function(group){
 			$scope.selectedGroup = _.find($scope.matchSchedule, function(schedule){
@@ -134,26 +142,30 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 		//var successSaveModal = $modal.open({title: 'My Title', content: 'My Content', show: false});
 
 		$scope.checkMissingScores = function(){
-			
-	    	if($scope.missingScores.length == 0 && $scope.finalist1 && $scope.finalist2 && $scope.winner){
+	    	if($scope.missingScores.length <8 && $scope.finalist1 && $scope.finalist2 && $scope.winner){
+	    		$scope.savingInProgress = true;
 	    		$scope.showMissingScores = false;
 	    		$scope.showMissingFinalists = false;
 	    		saveScoresheet()
 					.success(function(response){
-						console.log("saved for real", response);
-						$modal.open({template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved!</h3></div><div class="modal-body">Now sit back, relax and enjoy the fun.<br/><br/>Your predictions will be locked for changes two hours before the opening game.</div>'});
+						setTimeout(function(){
+							$scope.savingInProgress = false;
+							console.log("saved for real", response);
+							$modal.open({template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved!</h3></div><div class="modal-body">Now sit back, relax and enjoy the fun.<br/><br/>Your predictions will be locked for changes two hours before the opening game.</div>'});	
+						}, 1000);
 					}).error(function(data, status){
+						$scope.savingInProgress = false;
 						console.log(data, status);
 						alert("error while saving");
 					});
-	    	} else if ($scope.missingScores.length > 0){
+	    	} else //if ($scope.missingScores.length === 8){
 	    		$scope.showMissingScores = true;
 	    	}
-	    	 else if (!$scope.finalist1 || !$scope.finalist2 || !$scope.winner){
-	    	 	$scope.showMissingScores = false;
-				$scope.showMissingFinalists = true;
-	    	}
-		}
+	 //    	 else if (!$scope.finalist1 || !$scope.finalist2 || !$scope.winner){
+	 //    	 	$scope.showMissingScores = false;
+		// 		$scope.showMissingFinalists = true;
+	 //    	}
+		// }
 
 		if(Authentication.user){
 
@@ -173,9 +185,9 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 		    		});
 		    	});
 
-		    	$scope.$root.finalist1 = response.extraPredictions.finalist1;
-		    	$scope.$root.finalist2 = response.extraPredictions.finalist2;
-		    	$scope.$root.winner = response.extraPredictions.winner;
+		    	$scope.finalist1 = response.extraPredictions.finalist1;
+		    	$scope.finalist2 = response.extraPredictions.finalist2;
+		    	$scope.winner = response.extraPredictions.winner;
 				console.log('returned', response);
 			}).error(function(data, status){
 				alert("Error loading your predictions");

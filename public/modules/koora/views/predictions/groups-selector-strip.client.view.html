@@ -1,0 +1,23 @@
+<div class="text-center groups-strip">
+        Group
+        <div class="group" ng-repeat="group in matchSchedule">
+            <span ng-click="$parent.$parent.selectedGroup = group" class="groupname" ng-class="{selected: $parent.$parent.selectedGroup.group === group.group}">{{group.group}}</span><span ng-show="group.scoresAdded === 6">&#x2713;</span> |
+        </div>
+        <div class="loader" data-ng-show="savingInProgress">
+        </div>
+        <button data-ng-show="!savingInProgress" data-ng-disabled="!authentication.user" data-ng-click="checkMissingScores()" type="button btn-inline" class="btn btn-success">Save my predictions</button>
+         
+    </div>
+    <div class="row">
+
+    <div class="alert alert-danger missing-scores" data-ng-show="showMissingScores || showMissingFinalists">
+				  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				  	<div ng-show="showMissingScores">
+				  		<br/>
+					  <strong>Please enter scores for at least one group and your finalists before saving.</strong>
+					  	<!-- <ul data-ng-repeat="v in missingScores" class="list-unstyled">
+				    		<li>{{v}}</li>
+				    	</ul> -->
+					</div>
+				</div>
+			</div>

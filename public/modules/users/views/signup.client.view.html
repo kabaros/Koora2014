@@ -31,10 +31,31 @@
 					<label for="password">Password</label>
 					<input type="password" id="password" name="password" class="form-control" data-ng-model="credentials.password" placeholder="Password">
 				</div>
+
+				<div class="form-group">
+					<label for="firstFinalist">Predicted Finalists</label>
+					<select id="firstFinalist" title="First Finalist" class="form-control" ng-model="finalist1" ng-options=" k as v for (k, v) in teamsNames">
+						<option value="">First Finalist</option>
+					</select>
+					<div class="text-center">vs</div>
+					<select id="firstFinalist" title="First Finalist" class="form-control" ng-model="finalist2" ng-options=" k as v for (k, v) in teamsNames">
+						<option value="">Second Finalist</option>
+					</select>
+					<div class="alert alert-warning" data-ng-show="finalist1 && finalist1 === finalist2">
+					  <strong>Your finalists can't be the same (obviously!)</strong>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="winner">Winner</label>
+					<select class="form-control" ng-selected="finalist1 || finalist2" ng-disabled="!finalist1 || !finalist2 ||finalist1 === finalist2"  ng-model="winner" ng-options="teamsNames[v] for v in [finalist1, finalist2]">
+				</select>
+				</div>
 				<div class="text-center form-group">
-					<button type="submit" class="btn btn-large btn-primary">Sign up</button>&nbsp; or&nbsp;
+					<button title="Please enter all fields including predicted finalists" data-ng-disabled="!credentials.password || !credentials.username || !credentials.email || !credentials.firstName || !finalist1 || !finalist2 || !winner || finalist1 === finalist2" type="submit" class="btn btn-large btn-primary">Sign up</button>&nbsp; or&nbsp;
 					<a href="/#!/signin" class="show-signup">Sign in</a>
 				</div>
+
 				<div data-ng-show="error" class="text-center text-danger">
 					<strong data-ng-bind="error"></strong>
 				</div>
