@@ -44,6 +44,8 @@ angular.element(document).ready(function () {
 ApplicationConfiguration.registerModule('articles');'use strict';
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('core');'use strict';
+// Use applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('koora');'use strict';
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('users');'use strict';
 // Configuring the Articles module
@@ -51,12 +53,9 @@ angular.module('articles').run([
   'Menus',
   function (Menus) {
     // Set top bar menu items
-    Menus.addMenuItem('topbar', 'My Predictions', 'my-predictions', 'item', '/my-predictions');
-    Menus.addMenuItem('topbar', 'My Groups', 'my-groups', 'item', '/my-groups');
-
-    // Menus.addMenuItem('topbar', 'Articles', 'articles', 'dropdown', '/articles(/create)?');
-    // Menus.addSubMenuItem('topbar', 'articles', 'List Articles', 'articles');
-    // Menus.addSubMenuItem('topbar', 'articles', 'New Article', 'articles/create');
+    Menus.addMenuItem('topbar', 'Articles', 'articles', 'dropdown', '/articles(/create)?');
+    Menus.addSubMenuItem('topbar', 'articles', 'List Articles', 'articles');
+    Menus.addSubMenuItem('topbar', 'articles', 'New Article', 'articles/create');
   }
 ]);'use strict';
 // Setting up route
@@ -153,14 +152,22 @@ angular.module('core').config([
 ]);'use strict';
 angular.module('core').controller('HeaderController', [
   '$scope',
+  '$location',
   'Authentication',
   'Menus',
-  function ($scope, Authentication, Menus) {
+  function ($scope, $location, Authentication, Menus) {
     $scope.authentication = Authentication;
     $scope.isCollapsed = false;
     $scope.menu = Menus.getMenu('topbar');
     $scope.toggleCollapsibleMenu = function () {
       $scope.isCollapsed = !$scope.isCollapsed;
+    };
+    $scope.goTo = function (name) {
+      // console.log($scope.selectedPage);
+      if (name === 'auth/signout') {
+        window.location.href = name;
+      } else
+        $location.path(name);
     };
     // Collapsing the menu after navigation
     $scope.$on('$stateChangeSuccess', function () {
@@ -170,10 +177,43 @@ angular.module('core').controller('HeaderController', [
 ]);'use strict';
 angular.module('core').controller('HomeController', [
   '$scope',
+  '$interval',
   'Authentication',
-  function ($scope, Authentication) {
+  function ($scope, $interval, Authentication) {
     // This provides Authentication context.
     $scope.authentication = Authentication;
+    //http://stackoverflow.com/questions/9335140/how-to-countdown-to-a-date
+    var worldCupStartDate = new Date('2014-06-12T16:00+0100');
+    var _second = 1000;
+    var _minute = _second * 60;
+    var _hour = _minute * 60;
+    var _day = _hour * 24;
+    var timer;
+    function showRemaining() {
+      var now = new Date();
+      var distance = worldCupStartDate - now;
+      if (distance < 0) {
+        $interval.cancel(timer);
+        $scope.remaingTime = {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0
+        };
+        return;
+      }
+      var days = Math.floor(distance / _day);
+      var hours = Math.floor(distance % _day / _hour);
+      var minutes = Math.floor(distance % _hour / _minute);
+      var seconds = Math.floor(distance % _minute / _second);
+      $scope.remainingTime = {
+        days: days,
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds
+      };
+    }
+    timer = $interval(showRemaining, 1000);
   }
 ]);'use strict';
 //Menu service used for managing  menus
@@ -307,6 +347,731 @@ angular.module('core').service('Menus', [function () {
     //Adding the topbar menu
     this.addMenu('topbar');
   }]);'use strict';
+//Setting up route
+angular.module('koora').config([
+  '$stateProvider',
+  function ($stateProvider) {
+    // Koora state routing
+    $stateProvider.state('my-predictions', {
+      url: '/my-predictions',
+      templateUrl: 'modules/koora/views/my-predictions.client.view.html'
+    }).state('my-pools', {
+      url: '/my-pools',
+      templateUrl: 'modules/koora/views/my-pools.client.view.html'
+    }).state('view-pool', {
+      url: '/my-pools/:name',
+      templateUrl: 'modules/koora/views/pools/view-pool.client.view.html'
+    });
+  }
+]);
+angular.module('kooraConfiguration', []);'use strict';
+angular.module('koora').controller('MyPoolsController', [
+  '$scope',
+  '$location',
+  'Authentication',
+  'Pool',
+  function ($scope, $location, Authentication, pool) {
+    $scope.authentication = Authentication;
+    $scope.baseUrl = $location.absUrl();
+    // if(!Authentication.user){
+    // 		$location.path('signin');
+    // 		return;
+    // 	}
+    if ($scope.authentication.user) {
+      $scope.myPools = Authentication.user.pools || [];
+      if ($scope.myPools.length > 0) {
+        $scope.selectedPool = $scope.myPools[0];
+        $scope.isPoolAdmin = _.find($scope.myPools, function (pool) {
+          return pool.isAdmin;
+        }) !== undefined;
+      }
+    }
+    //$scope.poolToSave;
+    $scope.savePool = function () {
+      return pool.save($scope.poolToSave).success(function (res) {
+        $scope.poolToSave.displayName = '';
+        $scope.isPoolAdmin = true;
+        res.isAdmin = true;
+        $scope.myPools.push(res);
+        $scope.savedPool = res;
+      }).error(function (data, status) {
+        console.log('error', data, status);
+        alert(data && data.message || 'An error occured');
+      });
+    };
+  }
+]);'use strict';
+angular.module('koora').controller('MyPredictionsController', [
+  '$scope',
+  '$modal',
+  'Authentication',
+  'MatchSchedule',
+  'ScoreSheet',
+  function ($scope, $modal, Authentication, matchSchedule, scoreSheet) {
+    //$scope.global = Global;
+    $scope.authentication = Authentication;
+    $scope.matchSchedule = matchSchedule.schedule;
+    $scope.teamsNames = matchSchedule.teamsNames;
+    $scope.standings = {};
+    _.each($scope.matchSchedule, function (group) {
+      $scope.standings[group.group] = [];
+      _.each(group.matches, function (match) {
+        _.each([
+          match.team1,
+          match.team2
+        ], function (team) {
+          if ($scope.standings.length === 0 || !_.find($scope.standings[group.group], function (item) {
+              return item.team === team;
+            })) {
+            $scope.standings[group.group].push({
+              team: team,
+              played: 0,
+              won: 0,
+              drawn: 0,
+              lost: 0,
+              gf: 0,
+              ga: 0,
+              pts: 0
+            });
+          }
+        });
+      });
+    });
+    function clearStanding(group) {
+      for (var i = 0; i < group.length; i++) {
+        var team = group[i];
+        team.played = team.won = team.drawn = team.lost = team.gf = team.ga = team.pts = 0;
+      }
+    }
+    $scope.$watch('matchSchedule', function (newValue, oldValue) {
+      //console.log(oldValue, newValue);
+      $scope.missingScores = [];
+      $scope.qualifiers = {};
+      var standings = $scope.standings;
+      var standingChanged = false;
+      for (var i = 0; i < $scope.matchSchedule.length; i++) {
+        var group = $scope.matchSchedule[i];
+        var currentgroup = standings[group.group];
+        clearStanding(currentgroup);
+        group.scoresAdded = 0;
+        for (var j = 0; j < group.matches.length; j++) {
+          var match = group.matches[j], team1 = match.team1, team2 = match.team2;
+          if (!_.isUndefined(match.team1Score) && !_.isUndefined(match.team2Score)) {
+            group.scoresAdded++;
+            standingChanged = true;
+            //teamScore = {played: 0, points: team1points}
+            var team1Standing = _.find(currentgroup, function (item) {
+                return item.team === team1;
+              }), team2Standing = _.find(currentgroup, function (item) {
+                return item.team === team2;
+              });
+            team1Standing.played = ++team1Standing.played;
+            team2Standing.played = ++team2Standing.played;
+            team1Standing.gf = team1Standing.gf + match.team1Score;
+            team1Standing.ga = team1Standing.ga + match.team2Score;
+            team2Standing.gf = team2Standing.gf + match.team2Score;
+            team2Standing.ga = team2Standing.ga + match.team1Score;
+            if (match.team1Score === match.team2Score) {
+              team1Standing.pts++;
+              team2Standing.pts++;
+            } else if (match.team1Score > match.team2Score)
+              team1Standing.pts += 3;
+            else if (match.team2Score > match.team1Score)
+              team2Standing.pts += 3;  // currentgroup[team1] = team1Standing;
+                                       // currentgroup[team2] = team2Standing;
+          }
+        }
+        if (group.scoresAdded !== 6) {
+          $scope.missingScores.push('Group ' + group.group + ' is missing ' + (6 - group.scoresAdded) + ' scores.');
+        }
+        $scope.standings[group.group].sort(function (a, b) {
+          if (a.pts !== b.pts)
+            return a.pts < b.pts;
+          else {
+            var aDiff = a.gf - a.ga, bDiff = b.gf - b.ga;
+            if (aDiff !== bDiff)
+              return aDiff < bDiff;
+            else {
+              return a.gf < b.gf;
+            }
+          }
+        });
+        var firstQualifier = $scope.standings[group.group][0].team, secondQualifier = $scope.standings[group.group][1].team;
+        group.qualifiers = [
+          firstQualifier,
+          secondQualifier
+        ];
+        $scope.qualifiers[firstQualifier] = $scope.teamsNames[firstQualifier];
+        $scope.qualifiers[secondQualifier] = $scope.teamsNames[secondQualifier];
+      }
+      console.log('missingScores', $scope.missingScores.length);
+      if (standingChanged)
+        console.log('latestStanding', $scope.standings);
+    }, true);
+    $scope.selectedGroup = $scope.matchSchedule[0];
+    var saveScoresheet = function () {
+      return scoreSheet.save($scope.matchSchedule, {
+        qualifiers: _.map($scope.qualifiers, function (v, k) {
+          return k;
+        }),
+        finalist1: $scope.finalist1,
+        finalist2: $scope.finalist2,
+        winner: $scope.winner
+      });
+    };
+    $scope.$watchCollection('[finalist1, finalist2]', function (newValues, oldValues, scope) {
+      if (oldValues && newValues && !_.contains(newValues, $scope.winner)) {
+        $scope.winner = newValues[0] || newValues[1];
+      }
+    });
+    $scope.changeGroup = function (group) {
+      $scope.selectedGroup = _.find($scope.matchSchedule, function (schedule) {
+        return schedule.group === group.group;
+      });
+    };
+    //var successSaveModal = $modal.open({title: 'My Title', content: 'My Content', show: false});
+    $scope.checkMissingScores = function () {
+      if ($scope.missingScores.length < 8 && $scope.finalist1 && $scope.finalist2 && $scope.winner) {
+        $scope.savingInProgress = true;
+        $scope.showMissingScores = false;
+        $scope.showMissingFinalists = false;
+        saveScoresheet().success(function (response) {
+          setTimeout(function () {
+            $scope.savingInProgress = false;
+            console.log('saved for real', response);
+            $modal.open({ template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved!</h3></div><div class="modal-body">Now sit back, relax and enjoy the fun.<br/><br/>Your predictions will be locked for changes two hours before the opening game.</div>' });
+          }, 1000);
+        }).error(function (data, status) {
+          $scope.savingInProgress = false;
+          console.log(data, status);
+          alert('error while saving');
+        });
+      } else
+        //if ($scope.missingScores.length === 8){
+        $scope.showMissingScores = true;
+    };
+    //    	 else if (!$scope.finalist1 || !$scope.finalist2 || !$scope.winner){
+    //    	 	$scope.showMissingScores = false;
+    // 		$scope.showMissingFinalists = true;
+    //    	}
+    // }
+    if (Authentication.user) {
+      scoreSheet.get().success(function (response) {
+        if (!response.scores)
+          return;
+        var savedScores = _.object(_.map(response.scores, function (scoreSheet) {
+            return [
+              scoreSheet.matchId,
+              {
+                team1Score: scoreSheet.team1Score,
+                team2Score: scoreSheet.team2Score
+              }
+            ];
+          }));
+        // console.log('savedscores,', savedScores)
+        _.each($scope.matchSchedule, function (group) {
+          _.each(group.matches, function (match) {
+            console.log('savedscore', savedScores[match.matchId]);
+            match.team1Score = (savedScores[match.matchId] || {}).team1Score;
+            match.team2Score = (savedScores[match.matchId] || {}).team2Score;
+          });
+        });
+        $scope.finalist1 = response.extraPredictions.finalist1;
+        $scope.finalist2 = response.extraPredictions.finalist2;
+        $scope.winner = response.extraPredictions.winner;
+        console.log('returned', response);
+      }).error(function (data, status) {
+        alert('Error loading your predictions');  //console.log('error', data, status)
+      });
+    }
+  }
+]);'use strict';
+angular.module('koora').controller('PoolViewController', [
+  '$scope',
+  'Authentication',
+  '$stateParams',
+  '$location',
+  'Pool',
+  'MatchSchedule',
+  function ($scope, Authentication, $stateParams, $location, Pool, matchSchedule) {
+    var $poolScope = $scope;
+    $scope.authentication = Authentication;
+    $scope.teamsNames = matchSchedule.teamsNames;
+    var loadPool = function (pool, status) {
+      console.log('succes', pool, status);
+      $poolScope.pool = pool;
+      var userPools = Authentication.user.pools;
+      console.log(Authentication.user);
+      $scope.isMemberOfGroup = userPools !== null && _.find(userPools, function (userPool) {
+        return userPool.name === pool.name;
+      });
+    };
+    $scope.initPool = function () {
+      if (!Authentication.user) {
+        $scope.notAuthenticated;
+        return;
+      }
+      var poolName = $stateParams.name;
+      Pool.get(poolName).success(loadPool).error(function (data, status) {
+        if (status === 404) {
+          $scope.groupNotFound = true;
+        }
+        console.log('error', data, status);
+      });
+    };
+    $scope.joinPool = function () {
+      $scope.joinError = '';
+      Pool.join($scope.pool.name, $scope.joinPassword).success(function (res, status) {
+        $poolScope.joinPassword = '';
+        $poolScope.joinedSuccess = true;
+        $poolScope.authentication.user.pools = $poolScope.authentication.user.pools || [];
+        $poolScope.authentication.user.pools.push(res);
+        console.log('success join pool', res, status);
+      }).error(function (res, err) {
+        $poolScope.joinPassword = '';
+        $poolScope.joinError = res.message;
+        console.log(res);
+      });
+    };
+  }
+]);angular.module('koora').directive('numbersOnly', function () {
+  return {
+    require: 'ngModel',
+    link: function (scope, element, attrs, modelCtrl) {
+      modelCtrl.$parsers.push(function (inputValue) {
+        // this next if is necessary for when using ng-required on your input. 
+        // In such cases, when a letter is typed first, this parser will be called
+        // again, and the 2nd time, the value will be undefined
+        if (!inputValue)
+          return;
+        var transformedInput = inputValue.replace(/[^0-9]/g, '');
+        if (transformedInput.toString().length > 2) {
+          transformedInput = transformedInput.substring(0, 2);
+        }
+        if (transformedInput.toString().length == 2 && transformedInput.toString()[0] === '0')
+          transformedInput = transformedInput.substring(1);
+        if (transformedInput !== inputValue) {
+          modelCtrl.$setViewValue(transformedInput);
+          modelCtrl.$render();
+        }
+        return parseInt(transformedInput || 0);
+      });
+    }
+  };
+});'use strict';
+//Menu service used for managing  menus
+angular.module('koora').service('MatchSchedule', [function () {
+    // Define the menus object
+    this.schedule = [
+      {
+        group: 'A',
+        matches: [
+          {
+            matchId: 1,
+            date: '2014-06-12T16:00+0100',
+            team1: 'BRA',
+            team2: 'CRO'
+          },
+          {
+            matchId: 2,
+            date: '2014-06-13T13:00+0100',
+            team1: 'MEX',
+            team2: 'CMR'
+          },
+          {
+            matchId: 17,
+            date: '2014-06-17T16:00+0100',
+            team1: 'BRA',
+            team2: 'MEX'
+          },
+          {
+            matchId: 18,
+            date: '2014-06-18T19:00+0100',
+            team1: 'CMR',
+            team2: 'CRO'
+          },
+          {
+            matchId: 33,
+            date: '2014-06-23T17:00+0100',
+            team1: 'CMR',
+            team2: 'BRA'
+          },
+          {
+            matchId: 34,
+            date: '2014-06-23T17:00+0100',
+            team1: 'CRO',
+            team2: 'MEX'
+          }
+        ]
+      },
+      {
+        group: 'B',
+        matches: [
+          {
+            matchId: 3,
+            date: '2014-06-13T16:00+0100',
+            team1: 'ESP',
+            team2: 'NED'
+          },
+          {
+            matchId: 4,
+            date: '2014-06-13T19:00+0100',
+            team1: 'CHI',
+            team2: 'AUS'
+          },
+          {
+            matchId: 20,
+            date: '2014-06-18T13:00+0100',
+            team1: 'AUS',
+            team2: 'NED'
+          },
+          {
+            matchId: 19,
+            date: '2014-06-18T16:00+0100',
+            team1: 'ESP',
+            team2: 'CHI'
+          },
+          {
+            matchId: 35,
+            date: '2014-06-23T13:00+0100',
+            team1: 'AUS',
+            team2: 'ESP'
+          },
+          {
+            matchId: 36,
+            date: '2014-06-23T13:00+0100',
+            team1: 'NED',
+            team2: 'CHI'
+          }
+        ]
+      },
+      {
+        group: 'C',
+        matches: [
+          {
+            matchId: 5,
+            date: '2014-06-14T13:00+0100',
+            team1: 'COL',
+            team2: 'GRE'
+          },
+          {
+            matchId: 6,
+            date: '2014-06-14T22:00+0100',
+            team1: 'CIV',
+            team2: 'JPN'
+          },
+          {
+            matchId: 21,
+            date: '2014-06-19T13:00+0100',
+            team1: 'COL',
+            team2: 'CIV'
+          },
+          {
+            matchId: 22,
+            date: '2014-06-19T19:00+0100',
+            team1: 'JPN',
+            team2: 'GRE'
+          },
+          {
+            matchId: 37,
+            date: '2014-06-24T17:00+0100',
+            team1: 'JPN',
+            team2: 'COL'
+          },
+          {
+            matchId: 38,
+            date: '2014-06-24T17:00+0100',
+            team1: 'GRE',
+            team2: 'CIV'
+          }
+        ]
+      },
+      {
+        group: 'D',
+        matches: [
+          {
+            matchId: 7,
+            date: '2014-06-14T16:00+0100',
+            team1: 'URU',
+            team2: 'CRC'
+          },
+          {
+            matchId: 8,
+            date: '2014-06-14T19:00+0100',
+            team1: 'ENG',
+            team2: 'ITA'
+          },
+          {
+            matchId: 23,
+            date: '2014-06-19T16:00+0100',
+            team1: 'URU',
+            team2: 'ENG'
+          },
+          {
+            matchId: 24,
+            date: '2014-06-20T13:00+0100',
+            team1: 'ITA',
+            team2: 'CRC'
+          },
+          {
+            matchId: 39,
+            date: '2014-06-24T13:00+0100',
+            team1: 'ITA',
+            team2: 'URU'
+          },
+          {
+            matchId: 40,
+            date: '2014-06-24T13:00+0100',
+            team1: 'CRC',
+            team2: 'ENG'
+          }
+        ]
+      },
+      {
+        group: 'E',
+        matches: [
+          {
+            matchId: 9,
+            date: '2014-06-15T13:00+0100',
+            team1: 'SUI',
+            team2: 'ECU'
+          },
+          {
+            matchId: 10,
+            date: '2014-06-15T16:00+0100',
+            team1: 'FRA',
+            team2: 'HON'
+          },
+          {
+            matchId: 25,
+            date: '2014-06-20T16:00+0100',
+            team1: 'SUI',
+            team2: 'FRA'
+          },
+          {
+            matchId: 26,
+            date: '2014-06-20T19:00+0100',
+            team1: 'HON',
+            team2: 'ECU'
+          },
+          {
+            matchId: 41,
+            date: '2014-06-25T17:00+0100',
+            team1: 'HON',
+            team2: 'SUI'
+          },
+          {
+            matchId: 42,
+            date: '2014-06-25T17:00+0100',
+            team1: 'ECU',
+            team2: 'FRA'
+          }
+        ]
+      },
+      {
+        group: 'F',
+        matches: [
+          {
+            matchId: 11,
+            date: '2014-06-15T19:00+0100',
+            team1: 'ARG',
+            team2: 'BIH'
+          },
+          {
+            matchId: 12,
+            date: '2014-06-15T16:00+0100',
+            team1: 'IRN',
+            team2: 'NGA'
+          },
+          {
+            matchId: 27,
+            date: '2014-06-21T13:00+0100',
+            team1: 'ARG',
+            team2: 'IRN'
+          },
+          {
+            matchId: 28,
+            date: '2014-06-21T19:00+0100',
+            team1: 'NGA',
+            team2: 'BIH'
+          },
+          {
+            matchId: 43,
+            date: '2014-06-21T13:00+0100',
+            team1: 'NGA',
+            team2: 'ARG'
+          },
+          {
+            matchId: 44,
+            date: '2014-06-21T13:00+0100',
+            team1: 'BIH',
+            team2: 'IRN'
+          }
+        ]
+      },
+      {
+        group: 'G',
+        matches: [
+          {
+            matchId: 13,
+            date: '2014-06-16T13:00+0100',
+            team1: 'GER',
+            team2: 'POR'
+          },
+          {
+            matchId: 14,
+            date: '2014-06-15T16:00+0100',
+            team1: 'GHA',
+            team2: 'USA'
+          },
+          {
+            matchId: 29,
+            date: '2014-06-21T16:00+0100',
+            team1: 'GER',
+            team2: 'GHA'
+          },
+          {
+            matchId: 30,
+            date: '2014-06-22T19:00+0100',
+            team1: 'USA',
+            team2: 'POR'
+          },
+          {
+            matchId: 45,
+            date: '2014-06-26T13:00+0100',
+            team1: 'USA',
+            team2: 'GER'
+          },
+          {
+            matchId: 46,
+            date: '2014-06-26T13:00+0100',
+            team1: 'POR',
+            team2: 'GHA'
+          }
+        ]
+      },
+      {
+        group: 'H',
+        matches: [
+          {
+            matchId: 15,
+            date: '2014-06-17T13:00+0100',
+            team1: 'BEL',
+            team2: 'ALG'
+          },
+          {
+            matchId: 16,
+            date: '2014-06-17T19:00+0100',
+            team1: 'RUS',
+            team2: 'KOR'
+          },
+          {
+            matchId: 31,
+            date: '2014-06-22T13:00+0100',
+            team1: 'BEL',
+            team2: 'RUS'
+          },
+          {
+            matchId: 32,
+            date: '2014-06-22T16:00+0100',
+            team1: 'KOR',
+            team2: 'ALG'
+          },
+          {
+            matchId: 47,
+            date: '2014-06-26T17:00+0100',
+            team1: 'KOR',
+            team2: 'BEL'
+          },
+          {
+            matchId: 48,
+            date: '2014-06-26T17:00+0100',
+            team1: 'ALG',
+            team2: 'RUS'
+          }
+        ]
+      }
+    ];
+    this.teamsNames = {
+      'BRA': 'Brazil',
+      'CRO': 'Croatia',
+      'MEX': 'Mexico',
+      'CMR': 'Cameroon',
+      'ESP': 'Spain',
+      'NED': 'Netherlands',
+      'CHI': 'Chile',
+      'AUS': 'Australia',
+      'COL': 'Colombia',
+      'GRE': 'Greece',
+      'CIV': 'Cote d\'ivoire',
+      'JPN': 'Japan',
+      'URU': 'Uruguay',
+      'CRC': 'Costa Rica',
+      'ENG': 'England',
+      'ITA': 'Italy',
+      'SUI': 'Switzerland',
+      'ECU': 'Ecuador',
+      'FRA': 'France',
+      'HON': 'Honduras',
+      'ARG': 'Argentina',
+      'BIH': 'Bosnia',
+      'IRN': 'Iran',
+      'NGA': 'Nigeria',
+      'GER': 'Germany',
+      'POR': 'Portugal',
+      'GHA': 'Ghana',
+      'USA': 'USA',
+      'BEL': 'Belgium',
+      'ALG': 'Algeria',
+      'RUS': 'Russia',
+      'KOR': 'Korea'
+    };
+  }]);'use strict';
+angular.module('koora').factory('Pool', [
+  '$http',
+  function ($http) {
+    return {
+      get: function (name) {
+        return $http.get('/pool/' + name);
+      },
+      join: function (name, password) {
+        console.log('requesting to join', name, password);
+        return $http.post('pool/' + name + '/join', { password: password });
+      },
+      save: function (pool) {
+        return $http.post('/Pool', pool);
+      }
+    };
+  }
+]);'use strict';
+angular.module('koora').factory('ScoreSheet', [
+  '$http',
+  function ($http) {
+    return {
+      get: function () {
+        return $http.get('/ScoreSheet');
+      },
+      save: function (matchSchedule, extraPredictions) {
+        // console.log('SAVED', matchSchedule);
+        var scoreSheet = _.map(matchSchedule, function (group) {
+            return _.map(group.matches, function (match) {
+              return {
+                matchId: match.matchId,
+                team1Score: match.team1Score,
+                team2Score: match.team2Score
+              };
+            });
+          });
+        scoreSheet = _.flatten(scoreSheet);
+        // console.log(scoreSheet);
+        return $http.put('/ScoreSheet', {
+          scores: scoreSheet,
+          extraPredictions: extraPredictions
+        });
+      }
+    };
+  }
+]);'use strict';
 // Config HTTP Error Handling
 angular.module('users').config([
   '$httpProvider',
@@ -365,12 +1130,19 @@ angular.module('users').controller('AuthenticationController', [
   '$http',
   '$location',
   'Authentication',
-  function ($scope, $http, $location, Authentication) {
+  'MatchSchedule',
+  function ($scope, $http, $location, Authentication, matchSchedule) {
     $scope.authentication = Authentication;
+    $scope.teamsNames = matchSchedule.teamsNames;
     //If user is signed in then redirect back home
     if ($scope.authentication.user)
       $location.path('/');
     $scope.signup = function () {
+      $scope.credentials.predictions = {
+        finalist1: $scope.finalist1,
+        finalist2: $scope.finalist2,
+        winner: $scope.winner
+      };
       $http.post('/auth/signup', $scope.credentials).success(function (response) {
         //If successful we assign the response to the global user model
         $scope.authentication.user = response;
@@ -380,6 +1152,11 @@ angular.module('users').controller('AuthenticationController', [
         $scope.error = response.message;
       });
     };
+    $scope.$watchCollection('[finalist1, finalist2]', function (newValues, oldValues, scope) {
+      if (_.contains(newValues, $scope.winner)) {
+        $scope.winner = newValues[0] || newValues[1];
+      }
+    });
     $scope.signin = function () {
       $http.post('/auth/signin', $scope.credentials).success(function (response) {
         //If successful we assign the response to the global user model
