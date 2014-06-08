@@ -71,14 +71,14 @@ module.exports = function(grunt) {
 					mangle: false
 				},
 				files: {
-					'public/dist/application.min.js': 'public/dist/application.js'
+					'public/assets/dist/application.min.js': 'public/assets/dist/application.js'
 				}
 			}
 		},
 		cssmin: {
 			combine: {
 				files: {
-					'public/dist/application.min.css': '<%= applicationCSSFiles %>'
+					'public/assets/dist/application.min.css': '<%= applicationCSSFiles %>'
 				}
 			}
 		},
@@ -108,7 +108,7 @@ module.exports = function(grunt) {
         ngmin: {
             production: {
                 files: {
-                    'public/dist/application.js': '<%= applicationJavaScriptFiles %>'
+                    'public/assets/dist/application.js': '<%= applicationJavaScriptFiles %>'
                 }
             }
         },

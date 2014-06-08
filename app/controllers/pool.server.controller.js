@@ -46,7 +46,9 @@ exports.create = function(req, res) {
 		res.send(403, {message: "You can not be the admin of more than one pool."});
 	} else {
 		pool.admin = req.user;
-		pool.name = pool.displayName.replace(/[^A-Z0-9]/ig,"-").toLowerCase();
+		pool.name = pool.displayName.replace(/[^\w[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF]/ig,"-").toLowerCase();
+
+		//.replace(/[^A-Z0-9]/ig,"-").toLowerCase();
 		pool.password = genarateRandomString(6);
 		pool.members.push(req.user._id);
 
