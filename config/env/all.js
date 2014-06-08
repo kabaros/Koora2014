@@ -3,8 +3,8 @@
 module.exports = {
 	app: {
 		title: 'Koora 2014',
-		description: 'Enjoy the World Cup with your friends',
-		keywords: 'world cup, brazil, pool, competition, predictions, football, england'
+		description: 'The simple World Cup Predictor game.',
+		keywords: 'world cup, brazil, pool, predictor, competition, predictions, football, england'
 	},
 	port: process.env.PORT || 3000,
 	templateEngine: 'swig',
