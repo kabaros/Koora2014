@@ -31,17 +31,17 @@
 					<br>
 					<div class="alert alert-warning col-md-10 col-md-offset-1">
 						Your are not member of this League.<br/><br/>
-						If you were invited to join "<strong>{{poolToJoin.displayName}}</strong>" League, then please provide the password you were given.
+						If you were invited to join "<strong>{{poolToJoin.displayName}}</strong>" League, then please provide the PIN you were given.
 						<br/><br/>
 						<div class="row">
 							<div class="col-md-12">
 								<form class="form-inline" role="form">
 									 <div class="form-group">
-									 	<label class="sr-only" for="group-password">Password</label>
-										<input data-ng-disabled="joinedSuccess" ng-model="joinPassword" id="group-password" class="form-control" placeholder="password" />
+									 	<label class="sr-only" for="group-password">PIN</label>
+										<input data-ng-disabled="joinedSuccess" ng-model="joinPassword" id="group-password" class="form-control" placeholder="PIN" />
 									</div>
 									
-									<button data-ng-disabled="joinedSuccess" data-ng-click="joinPool()" class="btn btn-primary form-control">Join this League</button>
+									<button data-ng-disabled="joinedSuccess || !joinPassword || joinPassword.length<5" data-ng-click="joinPool()" class="btn btn-primary form-control">Join this League</button>
 								</form>
 							</div>
 						</div>
@@ -87,10 +87,10 @@
 							 
 							<a href="#!/my-leagues/{{pool.name}}">{{pool.displayName}}</a>
 							
-							 <div data-ng-show="pool.isAdmin">Password: 
+							 <div data-ng-show="pool.isAdmin">PIN: 
 							  <strong><span data-ng-show="pool.isAdmin" title="Share this password for people willing to join your League"> {{pool.password}}</span></strong>
 							  <br/>
-							  <small>(Share this password along with the link of the League <a href="#!/my-leagues/{{pool.name}}">{{baseUrl + "/" + pool.name}}</a> to your friends to be able to join you)</small>
+							  <small>(Share this PIN along with the link of the League <a href="#!/my-leagues/{{pool.name}}">{{baseUrl + "/" + pool.name}}</a> to your friends to be able to join you)</small>
 							</div>
 						</li>
 					</ul>
