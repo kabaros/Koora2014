@@ -358,6 +358,12 @@ angular.module('koora').config([
     }).state('my-pools', {
       url: '/my-pools',
       templateUrl: 'modules/koora/views/my-pools.client.view.html'
+    }).state('my-standings', {
+      url: '/my-standings',
+      templateUrl: 'modules/koora/views/my-pools.client.view.html'
+    }).state('view-league', {
+      url: '/my-leagues/:name',
+      templateUrl: 'modules/koora/views/my-pools.client.view.html'
     }).state('view-pool', {
       url: '/my-pools/:name',
       templateUrl: 'modules/koora/views/my-pools.client.view.html'
@@ -374,12 +380,15 @@ angular.module('koora').controller('MyPoolsController', [
   function ($scope, $stateParams, $location, Authentication, Pool) {
     var $originalScope = $scope;
     $scope.authentication = Authentication;
-    $scope.baseUrl = $location.absUrl();
+    $scope.baseUrl = $location.protocol() + '://' + $location.host() + '/#!/my-leagues';
+    $scope.returnUrl = $location.url();
     $scope.groupByName = false;
     $scope.groupFound = true;
     $scope.isMemberOfGroup = true;
+    if ($stateParams.name) {
+      $scope.groupByName = true;
+    }
     var loadPool = function (pool, status) {
-      console.log('succes', pool, status);
       $scope.poolToJoin = pool;
       $scope.groupFound = true;
       $scope.groupNotFoundName = '';
@@ -401,34 +410,32 @@ angular.module('koora').controller('MyPoolsController', [
         return;
       }
       var poolName = poolToLoad || $stateParams.name;
-      console.log('getting ' + poolName);
       Pool.get(poolName).success(loadPool).error(function (data, status) {
         if (status === 404) {
           $scope.groupFound = false;
           $scope.groupNotFoundName = poolName;
         }
-        console.log('error', data, status);
       });
     };
     if ($scope.authentication.user) {
       $scope.myPools = Authentication.user.pools || [];
-      if ($scope.myPools.length > 0) {
-        $scope.selectedPool = _.last($scope.myPools);
-        $scope.isPoolAdmin = _.find($scope.myPools, function (pool) {
-          return pool.isAdmin;
-        }) !== undefined;
-        initPool($scope.selectedPool.name);
-      }
       if ($stateParams.name) {
         initPool();
         $scope.groupByName = true;
       } else {
         $scope.groupNotFoundName = '';
+        if ($scope.myPools.length > 0) {
+          $scope.selectedPool = _.last($scope.myPools);
+          $scope.isPoolAdmin = _.find($scope.myPools, function (pool) {
+            return pool.isAdmin;
+          }) !== undefined;
+          initPool($scope.selectedPool.name);
+        }
       }
     }
     //$scope.poolToSave;
     $scope.goTo = function (name) {
-      $location.path('my-pools/' + name);
+      $location.path('my-leagues/' + name);
     };
     $scope.savePool = function () {
       return Pool.save($scope.poolToSave).success(function (res) {
@@ -438,7 +445,6 @@ angular.module('koora').controller('MyPoolsController', [
         $scope.myPools.push(res);
         $scope.savedPool = res;
       }).error(function (data, status) {
-        console.log('error', data, status);
         alert(data && data.message || 'An error occured');
       });
     };
@@ -449,11 +455,9 @@ angular.module('koora').controller('MyPoolsController', [
         $originalScope.joinedSuccess = true;
         $originalScope.authentication.user.pools = $originalScope.authentication.user.pools || [];
         $originalScope.authentication.user.pools.push(res);
-        console.log('success join pool', res, status);
       }).error(function (res, err) {
         $originalScope.joinPassword = '';
         $originalScope.joinError = res.message;
-        console.log(res);
       });
     };
   }
@@ -501,7 +505,6 @@ angular.module('koora').controller('MyPredictionsController', [
       }
     }
     $scope.$watch('matchSchedule', function (newValue, oldValue) {
-      //console.log(oldValue, newValue);
       $scope.missingScores = [];
       $scope.qualifiers = {};
       var standings = $scope.standings;
@@ -561,9 +564,6 @@ angular.module('koora').controller('MyPredictionsController', [
         $scope.qualifiers[firstQualifier] = $scope.teamsNames[firstQualifier];
         $scope.qualifiers[secondQualifier] = $scope.teamsNames[secondQualifier];
       }
-      console.log('missingScores', $scope.missingScores.length);
-      if (standingChanged)
-        console.log('latestStanding', $scope.standings);
     }, true);
     $scope.selectedGroup = $scope.matchSchedule[0];
     var saveScoresheet = function () {
@@ -595,23 +595,16 @@ angular.module('koora').controller('MyPredictionsController', [
         saveScoresheet().success(function (response) {
           setTimeout(function () {
             $scope.savingInProgress = false;
-            console.log('saved for real', response);
             $modal.open({ template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved</h3></div><div class="modal-body text-center"> Make sure to save all your predictions before the start of the tournament. <br/><br/>Changes will be locked two hours before the opening game. <br/><br/>Good luck!</div>' });
           }, 1000);
         }).error(function (data, status) {
           $scope.savingInProgress = false;
-          console.log(data, status);
           alert('error while saving');
         });
-      } else
-        //if ($scope.missingScores.length === 8){
+      } else {
         $scope.showMissingScores = true;
+      }
     };
-    //    	 else if (!$scope.finalist1 || !$scope.finalist2 || !$scope.winner){
-    //    	 	$scope.showMissingScores = false;
-    // 		$scope.showMissingFinalists = true;
-    //    	}
-    // }
     if (Authentication.user) {
       scoreSheet.get().success(function (response) {
         if (!response.scores)
@@ -625,10 +618,8 @@ angular.module('koora').controller('MyPredictionsController', [
               }
             ];
           }));
-        // console.log('savedscores,', savedScores)
         _.each($scope.matchSchedule, function (group) {
           _.each(group.matches, function (match) {
-            console.log('savedscore', savedScores[match.matchId]);
             match.team1Score = (savedScores[match.matchId] || {}).team1Score;
             match.team2Score = (savedScores[match.matchId] || {}).team2Score;
           });
@@ -636,64 +627,10 @@ angular.module('koora').controller('MyPredictionsController', [
         $scope.finalist1 = response.extraPredictions.finalist1;
         $scope.finalist2 = response.extraPredictions.finalist2;
         $scope.winner = response.extraPredictions.winner;
-        console.log('returned', response);
       }).error(function (data, status) {
-        alert('Error loading your predictions');  //console.log('error', data, status)
+        alert('Error loading your predictions');
       });
     }
-  }
-]);'use strict';
-angular.module('koora').controller('PoolViewController', [
-  '$scope',
-  'Authentication',
-  '$stateParams',
-  '$location',
-  'Pool',
-  'MatchSchedule',
-  function ($scope, Authentication, $stateParams, $location, Pool, matchSchedule) {
-    var $poolScope = $scope;
-    $scope.authentication = Authentication;
-    $scope.teamsNames = matchSchedule.teamsNames;  // var loadPool = function(pool, status){
-                                                   // 	console.log("succes", pool, status);
-                                                   // 	$poolScope.pool = pool;
-                                                   // 	var userPools = Authentication.user.pools;
-                                                   // 	console.log(Authentication.user);
-                                                   // 	$scope.isMemberOfGroup = (userPools !== null && _.find(userPools, function(userPool){
-                                                   // 		return userPool.name === pool.name;
-                                                   // 	}));
-                                                   // };
-                                                   // $scope.initPool = function(){
-                                                   // 	if(!Authentication.user){
-                                                   // 		$scope.notAuthenticated;
-                                                   // 		return;
-                                                   // 	}
-                                                   // 	var poolName = $stateParams.name;
-                                                   // 	Pool.get(poolName)
-                                                   // 		.success(loadPool)
-                                                   // 		.error(function(data, status){
-                                                   // 			if(status === 404){
-                                                   // 				$scope.groupNotFound = true;
-                                                   // 			}
-                                                   // 			console.log("error", data, status);
-                                                   // 		});
-                                                   // }
-                                                   // $scope.joinPool = function(){
-                                                   // 	$scope.joinError = "";
-                                                   // 	Pool.join($scope.pool.name, $scope.joinPassword)
-                                                   // 		.success(function(res, status){
-                                                   // 			$poolScope.joinPassword = "";
-                                                   // 			$poolScope.joinedSuccess = true;
-                                                   // 			$poolScope.authentication.user.pools = 
-                                                   // 				$poolScope.authentication.user.pools || [];
-                                                   // 			$poolScope.authentication.user.pools.push(res);
-                                                   // 			console.log("success join pool", res, status);
-                                                   // 		})
-                                                   // 		.error(function(res, err){
-                                                   // 			$poolScope.joinPassword = "";
-                                                   // 			$poolScope.joinError = res.message;
-                                                   // 			console.log(res);
-                                                   // 		});
-                                                   // }
   }
 ]);angular.module('koora').directive('numbersOnly', function () {
   return {
@@ -1096,7 +1033,6 @@ angular.module('koora').factory('Pool', [
         return $http.get('/pool/' + name);
       },
       join: function (name, password) {
-        console.log('requesting to join', name, password);
         return $http.post('pool/' + name + '/join', { password: password });
       },
       save: function (pool) {
@@ -1113,7 +1049,6 @@ angular.module('koora').factory('ScoreSheet', [
         return $http.get('/ScoreSheet');
       },
       save: function (matchSchedule, extraPredictions) {
-        // console.log('SAVED', matchSchedule);
         var scoreSheet = _.map(matchSchedule, function (group) {
             return _.map(group.matches, function (match) {
               return {
@@ -1124,7 +1059,6 @@ angular.module('koora').factory('ScoreSheet', [
             });
           });
         scoreSheet = _.flatten(scoreSheet);
-        // console.log(scoreSheet);
         return $http.put('/ScoreSheet', {
           scores: scoreSheet,
           extraPredictions: extraPredictions
@@ -1178,10 +1112,10 @@ angular.module('users').config([
       url: '/settings/accounts',
       templateUrl: 'modules/users/views/settings/social-accounts.client.view.html'
     }).state('signup', {
-      url: '/signup',
+      url: '/signup?returnUrl',
       templateUrl: 'modules/users/views/signup.client.view.html'
     }).state('signin', {
-      url: '/signin',
+      url: '/signin?returnUrl',
       templateUrl: 'modules/users/views/signin.client.view.html'
     });
   }
@@ -1190,9 +1124,10 @@ angular.module('users').controller('AuthenticationController', [
   '$scope',
   '$http',
   '$location',
+  '$stateParams',
   'Authentication',
   'MatchSchedule',
-  function ($scope, $http, $location, Authentication, matchSchedule) {
+  function ($scope, $http, $location, $stateParams, Authentication, matchSchedule) {
     $scope.authentication = Authentication;
     $scope.teamsNames = matchSchedule.teamsNames;
     //If user is signed in then redirect back home
@@ -1207,8 +1142,11 @@ angular.module('users').controller('AuthenticationController', [
       $http.post('/auth/signup', $scope.credentials).success(function (response) {
         //If successful we assign the response to the global user model
         $scope.authentication.user = response;
-        //And redirect to the index page
-        $location.path('/');
+        debugger;
+        if ($stateParams.returnUrl) {
+          $location.path($stateParams.returnUrl);
+        } else
+          $location.path('/');
       }).error(function (response) {
         $scope.error = response.message;
       });
@@ -1222,8 +1160,10 @@ angular.module('users').controller('AuthenticationController', [
       $http.post('/auth/signin', $scope.credentials).success(function (response) {
         //If successful we assign the response to the global user model
         $scope.authentication.user = response;
-        //And redirect to the index page
-        $location.path('/');
+        if ($stateParams.returnUrl) {
+          $location.path($stateParams.returnUrl);
+        } else
+          $location.path('/');
       }).error(function (response) {
         $scope.error = response.message;
       });

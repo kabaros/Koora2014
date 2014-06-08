@@ -6,13 +6,17 @@ angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams
 		var $originalScope = $scope;
 
 		$scope.authentication = Authentication;
-		$scope.baseUrl = $location.absUrl();
+		$scope.baseUrl = $location.protocol() + "://" +$location.host() + "/#!/my-leagues";
+		$scope.returnUrl = $location.url();
 		$scope.groupByName = false;
 		$scope.groupFound = true;
 		$scope.isMemberOfGroup = true;
 
+		if($stateParams.name){
+			$scope.groupByName = true;
+		}
+
 		var loadPool = function(pool, status){
-			console.log("succes", pool, status);
 
 			$scope.poolToJoin = pool;
 			$scope.groupFound = true;
@@ -40,7 +44,7 @@ angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams
 			}
 
 			var poolName = poolToLoad || $stateParams.name;
-console.log("getting " + poolName)
+
 			Pool.get(poolName)
 				.success(loadPool)
 				.error(function(data, status){
@@ -48,7 +52,6 @@ console.log("getting " + poolName)
 						$scope.groupFound = false;
 						$scope.groupNotFoundName = poolName;
 					}
-					console.log("error", data, status);
 				});
 		};
 
@@ -57,28 +60,28 @@ console.log("getting " + poolName)
 		if($scope.authentication.user){
 			$scope.myPools = Authentication.user.pools || [];
 
-			if($scope.myPools.length>0){
-				$scope.selectedPool = _.last($scope.myPools);
-
-				$scope.isPoolAdmin = _.find($scope.myPools, function(pool){
-					return pool.isAdmin;
-				}) !== undefined;
-
-				initPool($scope.selectedPool.name);
-			}
-
 			if($stateParams.name){
 				initPool();
 				$scope.groupByName = true;
 			} else {
 				$scope.groupNotFoundName = "";
 
+				if($scope.myPools.length>0){
+					$scope.selectedPool = _.last($scope.myPools);
+
+					$scope.isPoolAdmin = _.find($scope.myPools, function(pool){
+						return pool.isAdmin;
+					}) !== undefined;
+
+					initPool($scope.selectedPool.name);
+				}
+
 			}
 		}
 		//$scope.poolToSave;
 
 		$scope.goTo = function(name) {
-			$location.path("my-pools/" +name);
+			$location.path("my-leagues/" +name);
 		}
 
 		$scope.savePool = function(){
@@ -90,7 +93,6 @@ console.log("getting " + poolName)
 					$scope.myPools.push(res);
 					$scope.savedPool = res;
 				}).error(function(data, status){
-					console.log("error", data, status);
 					alert(data && data.message || "An error occured");
 				});
 		};
@@ -109,13 +111,10 @@ console.log("getting " + poolName)
 						$originalScope.authentication.user.pools || [];
 
 					$originalScope.authentication.user.pools.push(res);
-
-					console.log("success join pool", res, status);
 				})
 				.error(function(res, err){
 					$originalScope.joinPassword = "";
 					$originalScope.joinError = res.message;
-					console.log(res);
 				});
 		}
 	}

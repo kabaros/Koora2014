@@ -18,11 +18,11 @@ angular.module('users').config(['$stateProvider',
 			templateUrl: 'modules/users/views/settings/social-accounts.client.view.html'
 		}).
 		state('signup', {
-			url: '/signup',
+			url: '/signup?returnUrl',
 			templateUrl: 'modules/users/views/signup.client.view.html'
 		}).
 		state('signin', {
-			url: '/signin',
+			url: '/signin?returnUrl',
 			templateUrl: 'modules/users/views/signin.client.view.html'
 		});
 	}

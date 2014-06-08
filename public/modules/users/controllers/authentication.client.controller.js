@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication', 'MatchSchedule',
-	function($scope, $http, $location, Authentication, matchSchedule) {
+angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', '$stateParams', 'Authentication', 'MatchSchedule',
+	function($scope, $http, $location, $stateParams, Authentication, matchSchedule) {
 		$scope.authentication = Authentication;
 		$scope.teamsNames = matchSchedule.teamsNames;
 
@@ -17,9 +17,11 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 			$http.post('/auth/signup', $scope.credentials).success(function(response) {
 				//If successful we assign the response to the global user model
 				$scope.authentication.user = response;
-
-				//And redirect to the index page
-				$location.path('/');
+debugger;
+				if($stateParams.returnUrl){
+					$location.path($stateParams.returnUrl);
+				}
+				else $location.path('/');
 			}).error(function(response) {
 				$scope.error = response.message;
 			});
@@ -38,8 +40,10 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 				//If successful we assign the response to the global user model
 				$scope.authentication.user = response;
 
-				//And redirect to the index page
-				$location.path('/');
+				if($stateParams.returnUrl){
+					$location.path($stateParams.returnUrl);
+				}
+				else $location.path('/');
 			}).error(function(response) {
 				$scope.error = response.message;
 			});

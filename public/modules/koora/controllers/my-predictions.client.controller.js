@@ -30,7 +30,6 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    }
 
 	    $scope.$watch('matchSchedule', function(newValue, oldValue){
-	    	//console.log(oldValue, newValue);
 	    	$scope.missingScores = [];
 	    	$scope.qualifiers = {};
 	    	var standings = $scope.standings;
@@ -110,8 +109,6 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    		$scope.qualifiers[firstQualifier] = $scope.teamsNames[firstQualifier];
 	    		$scope.qualifiers[secondQualifier] = $scope.teamsNames[secondQualifier];
 	    	}
-	    	console.log("missingScores", $scope.missingScores.length);
-	    	if(standingChanged) console.log('latestStanding', $scope.standings);
 	    }, true);
 		
 		$scope.selectedGroup = $scope.matchSchedule[0];
@@ -150,22 +147,16 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 					.success(function(response){
 						setTimeout(function(){
 							$scope.savingInProgress = false;
-							console.log("saved for real", response);
 							$modal.open({template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved</h3></div><div class="modal-body text-center"> Make sure to save all your predictions before the start of the tournament. <br/><br/>Changes will be locked two hours before the opening game. <br/><br/>Good luck!</div>'});	
 						}, 1000);
 					}).error(function(data, status){
 						$scope.savingInProgress = false;
-						console.log(data, status);
 						alert("error while saving");
 					});
-	    	} else //if ($scope.missingScores.length === 8){
+	    	} else {
 	    		$scope.showMissingScores = true;
 	    	}
-	 //    	 else if (!$scope.finalist1 || !$scope.finalist2 || !$scope.winner){
-	 //    	 	$scope.showMissingScores = false;
-		// 		$scope.showMissingFinalists = true;
-	 //    	}
-		// }
+	    }
 
 		if(Authentication.user){
 
@@ -176,10 +167,8 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 				var savedScores = _.object(_.map(response.scores, function(scoreSheet){
 					return [scoreSheet.matchId, {team1Score: scoreSheet.team1Score, team2Score: scoreSheet.team2Score }];
 				}));
-				// console.log('savedscores,', savedScores)
 				_.each($scope.matchSchedule, function(group){
 		    		_.each(group.matches, function(match){
-		    			console.log('savedscore', savedScores[match.matchId]);
 		    			match.team1Score = (savedScores[match.matchId]|| {}).team1Score;
 		    			match.team2Score = (savedScores[match.matchId]|| {}).team2Score;
 		    		});
@@ -188,10 +177,8 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 		    	$scope.finalist1 = response.extraPredictions.finalist1;
 		    	$scope.finalist2 = response.extraPredictions.finalist2;
 		    	$scope.winner = response.extraPredictions.winner;
-				console.log('returned', response);
 			}).error(function(data, status){
 				alert("Error loading your predictions");
-				//console.log('error', data, status)
 			});	
 		}
 	}

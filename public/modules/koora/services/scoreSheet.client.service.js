@@ -6,7 +6,6 @@ angular.module('koora').factory('ScoreSheet', ['$http', function($http){
 			return $http.get('/ScoreSheet');
 		},
 		save: function(matchSchedule, extraPredictions){
-			// console.log('SAVED', matchSchedule);
 			var scoreSheet = _.map(matchSchedule, function(group){
 				 return _.map(group.matches, function(match){
 					return {
@@ -18,11 +17,8 @@ angular.module('koora').factory('ScoreSheet', ['$http', function($http){
 			});
 			scoreSheet = _.flatten(scoreSheet);
 
-			// console.log(scoreSheet);
-
 			return $http.put('/ScoreSheet', 
 				{
-					//_id: matchSchedule._id,
 					scores: scoreSheet,
 					extraPredictions: extraPredictions
 				});
