@@ -99,8 +99,8 @@ var UserSchema = new Schema({
 });
 
 UserSchema.path('firstName').validate(function (v) {
-  return v.length < 10;
-}, 'User name must be less than 10 characters'); 
+  return v.length < 20;
+}, 'Name must be less than 20 characters'); 
 
 /**
  * Hook a pre save method to hash the password
