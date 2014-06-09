@@ -47,7 +47,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Scoresheet
  */
-exports.getSingle = function(req, res) {
+exports.getSingle = function(req, res, next) {
 	ScoreSheet.findOne({user: req.user._id}).populate('user', 'displayName').exec(function(err, scoreSheet) {
 		if (err) return next(err);
 		res.jsonp(scoreSheet);

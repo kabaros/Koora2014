@@ -53,7 +53,7 @@ var updatePoolWithMember = function(user, pool) {
 			members: user._id
 		}}, function(err){
 			if (err) {
-				console.log("error when adding member to default pool");
+				console.log('error when adding member to default pool');
 				return deferred.reject();
 
 			} else  {
@@ -62,16 +62,15 @@ var updatePoolWithMember = function(user, pool) {
 					name: pool.name
 				}}}, function(err){
 					if(err)
-						console.log("error while saving pool to user", err);
+						console.log('error while saving pool to user', err);
 					else 
-						return deferred.resolve(user)		
-				})
-				
-			};
+						return deferred.resolve(user);
+				});
+			}
 	});
 
 	return deferred.promise;	
-}
+};
 /**
  * Signup
  */
@@ -109,12 +108,12 @@ exports.signup = function(req, res) {
 					extraPredictions: req.body.predictions
 				});
 
-				console.log("about to save default scoresheet", scoreSheet);
+				console.log('about to save default scoresheet', scoreSheet);
 
 				scoreSheet.save(function(err){
 					if (err) {
 						return res.send(400, {
-							message: "error saving scoreSheet for user"
+							message: 'error saving scoreSheet for user'
 						});
 					} else {
 						req.login(user, function(err) {

@@ -35,7 +35,7 @@ var genarateRandomString = function(length, chars){
     var result = '';
     for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
     return result;
-}
+};
 /**
  * Create a Pool
  */
@@ -43,10 +43,10 @@ exports.create = function(req, res) {
 	var pool = new Pool(req.body);
 
 	if(req.user.isPoolAdmin){
-		res.send(403, {message: "You can not be the admin of more than one pool."});
+		res.send(403, {message: 'You can not be the admin of more than one pool.'});
 	} else {
 		pool.admin = req.user;
-		pool.name = pool.displayName.replace(/[^\w[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF]/ig,"-").toLowerCase();
+		pool.name = pool.displayName.replace(/[^\w[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FF]/ig,'-').toLowerCase();
 
 		//.replace(/[^A-Z0-9]/ig,"-").toLowerCase();
 		pool.password = genarateRandomString(6);
@@ -54,7 +54,7 @@ exports.create = function(req, res) {
 
 		pool.save(function(err){
 			if (err) {
-				console.log("error when saving pool", err, pool);
+				console.log('error when saving pool', err, pool);
 				return res.send(400, {
 					message: getErrorMessage(err)
 				});
@@ -75,18 +75,18 @@ exports.create = function(req, res) {
 exports.getSingle = function(req, res){
 	if(!req.pool)
 		return res.send(404, {
-				message: "Item does not exist"
+				message: 'Item does not exist'
 			});
 
 	res.jsonp(req.pool);
 };
 
 exports.join = function(req, res){
-	console.log("joining group", req.user.pools, req.pool);
+	console.log('joining group', req.user.pools, req.pool);
 
 	if(!req.pool){
 		return res.send(400, {
-				message: "The group and password you provided do not match."
+				message: 'The group and password you provided do not match.'
 			});
 	}
 
@@ -96,7 +96,7 @@ exports.join = function(req, res){
 
 	if(alreadyMember){
 		return res.send(400, {
-				message: "You're already a member of this group."
+				message: 'You\'re already a member of this group.'
 			});
 	}
 	else {
@@ -104,7 +104,7 @@ exports.join = function(req, res){
 			members: req.user._id
 		}}, function(err){
 			if (err) {
-				console.log("error when joining pool", err, req.body);
+				console.log('error when joining pool', err, req.body);
 				return res.send(400, {
 					message: getErrorMessage(err)
 				});
@@ -113,13 +113,12 @@ exports.join = function(req, res){
 					displayName: req.pool.displayName,
 					name: req.pool.name
 				}}}, function(){
-					console.log("jsonp", req.pool)
 					res.jsonp(req.pool);
 				});
 			}
 		});
 	}
-}
+};
 /**
  * Article middleware
  */

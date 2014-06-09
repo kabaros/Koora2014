@@ -8,7 +8,7 @@ angular.module('core').controller('HomeController', ['$scope', '$interval', 'Aut
 
 
 		//http://stackoverflow.com/questions/9335140/how-to-countdown-to-a-date
-		var worldCupStartDate = new Date('2014-06-12T16:00+0100');
+		var worldCupStartDate = new Date('2014-06-12T21:00+0100');
 
 		    var _second = 1000;
 		    var _minute = _second * 60;
