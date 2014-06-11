@@ -39,11 +39,11 @@
         		</div>
         		<div>
         			<div class="team score">
-        				<input type="text" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
+        				<input type="text" ng-disabled="match.disabled" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
         			</div>
         			<div class="vs"></div>
         			<div class="team score">
-        				<input placeholder="{{match.team2}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
+        				<input data-ng-disabled="match.disabled" placeholder="{{match.team2}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
         			</div>
         		</div>
     		</div>

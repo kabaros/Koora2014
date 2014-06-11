@@ -4,23 +4,11 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 		//$scope.global = Global;
 		$scope.authentication = Authentication;
 
-	    $scope.matchSchedule = matchSchedule.schedule;
 	    $scope.teamsNames = matchSchedule.teamsNames;
 
 	    $scope.standings = {};
 
-	    _.each($scope.matchSchedule, function(group){
-	    	$scope.standings[group.group] = [];
-	    	_.each(group.matches, function(match){
-	    		_.each([match.team1, match.team2], function(team){
-	    			if($scope.standings.length === 0 || !_.find($scope.standings[group.group], function(item){
-		    			return item.team === team;
-		    		})) {
-		    			$scope.standings[group.group].push({team: team, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0});
-		    		}
-	    		});
-	    	});
-	    });
+	    
 
 	    function clearStanding(group){
 	    	for(var i=0;i<group.length; i++){
@@ -30,6 +18,8 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    }
 
 	    $scope.$watch('matchSchedule', function(newValue, oldValue){
+	    	if(!newValue)
+	    		return;
 	    	$scope.missingScores = [];
 	    	$scope.qualifiers = {};
 	    	var standings = $scope.standings;
@@ -111,7 +101,7 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    	}
 	    }, true);
 		
-		$scope.selectedGroup = $scope.matchSchedule[0];
+		
 
 		var saveScoresheet = function(){
 			return scoreSheet.save($scope.matchSchedule, {
@@ -158,28 +148,47 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    	}
 	    }
 
-		if(Authentication.user){
+	    matchSchedule.getSchedule().success(function(res){
+	    	console.log(res);
+	    	$scope.matchSchedule = res;
+	    	$scope.selectedGroup = $scope.matchSchedule[0];
 
-			scoreSheet.get().success(function(response){
-				if(!response.scores)
-					return;
-
-				var savedScores = _.object(_.map(response.scores, function(scoreSheet){
-					return [scoreSheet.matchId, {team1Score: scoreSheet.team1Score, team2Score: scoreSheet.team2Score }];
-				}));
-				_.each($scope.matchSchedule, function(group){
-		    		_.each(group.matches, function(match){
-		    			match.team1Score = (savedScores[match.matchId]|| {}).team1Score;
-		    			match.team2Score = (savedScores[match.matchId]|| {}).team2Score;
+	    	_.each($scope.matchSchedule, function(group){
+		    	$scope.standings[group.group] = [];
+		    	_.each(group.matches, function(match){
+		    		_.each([match.team1, match.team2], function(team){
+		    			if($scope.standings.length === 0 || !_.find($scope.standings[group.group], function(item){
+			    			return item.team === team;
+			    		})) {
+			    			$scope.standings[group.group].push({team: team, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0});
+			    		}
 		    		});
 		    	});
+		    });
+		    	
+			if(Authentication.user){
 
-		    	$scope.finalist1 = response.extraPredictions.finalist1;
-		    	$scope.finalist2 = response.extraPredictions.finalist2;
-		    	$scope.winner = response.extraPredictions.winner;
-			}).error(function(data, status){
-				alert("Error loading your predictions");
-			});	
-		}
+				scoreSheet.get().success(function(response){
+					if(!response.scores)
+						return;
+
+					var savedScores = _.object(_.map(response.scores, function(scoreSheet){
+						return [scoreSheet.matchId, {team1Score: scoreSheet.team1Score, team2Score: scoreSheet.team2Score }];
+					}));
+					_.each($scope.matchSchedule, function(group){
+			    		_.each(group.matches, function(match){
+			    			match.team1Score = (savedScores[match.matchId]|| {}).team1Score;
+			    			match.team2Score = (savedScores[match.matchId]|| {}).team2Score;
+			    		});
+			    	});
+
+			    	$scope.finalist1 = response.extraPredictions.finalist1;
+			    	$scope.finalist2 = response.extraPredictions.finalist2;
+			    	$scope.winner = response.extraPredictions.winner;
+				}).error(function(data, status){
+					alert("Error loading your predictions");
+				});	
+			}
+	    });
 	}
 ]);

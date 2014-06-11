@@ -8,6 +8,12 @@ var mongoose = require('mongoose'),
 	ScoreSheet = mongoose.model('Scoresheet'),
     _ = require('lodash');
 
+var getMatchSchedule = function(){
+	return 
+}
+
+var matchesSchedule = _.flatten(_.pluck(require("../models/matches-schedule").schedule, "matches"));
+console.log("matchesSchedule>>>", matchesSchedule);
 /**
  * Create a Scoresheet
  */
@@ -40,8 +46,52 @@ exports.create = function(req, res) {
 		}
 	};
 	
-	ScoreSheet.findOneAndUpdate({user: req.user._id},
-		scoreSheet, {upsert: true}, func);
+
+	var matchesToIgnore = _.pluck(_.where(scoreSheet.scores, function(score){
+		var matchTime = _.find(matchesSchedule, function(match){
+			return match.matchId === score.matchId;
+		}).date;
+
+		var timeDiff = (new Date(matchTime) - Date.now())/1000/3600;
+
+		return timeDiff < 2;
+	}), "matchId");
+
+	console.log("matchesToIgnore", matchesToIgnore);
+
+	ScoreSheet.findOne({user: req.user._id}, function(err, savedScoreSheet){
+
+		var originalScores = _.filter(savedScoreSheet.scores, function(score){
+			return _.contains(matchesToIgnore, score.matchId);
+		});
+		
+		
+		console.log(originalScores.length);
+
+		var newScores = _.filter(scoreSheet.scores, function(score){
+			return !_.contains(matchesToIgnore, score.matchId);
+		});
+
+		var scoresToSave = _.union(originalScores, newScores);
+
+		//getting rid of _ids
+		scoresToSave = _.map(scoresToSave, function(score){
+			return {
+				matchId: score.matchId,
+				team1Score: score.team1Score,
+				team2Score: score.team2Score
+			}
+		});
+
+		scoreSheet.scores = scoresToSave;
+
+		console.log("****", scoresToSave);
+		console.log("***");
+		
+		ScoreSheet.findOneAndUpdate({user: req.user._id},
+			scoreSheet, {upsert: true}, func);
+		
+	});
 };
 
 /**

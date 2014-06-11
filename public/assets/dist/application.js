@@ -45,6 +45,8 @@ ApplicationConfiguration.registerModule('articles');'use strict';
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('core');'use strict';
 // Use applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('koora-admin');'use strict';
+// Use applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('koora');'use strict';
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('users');'use strict';
@@ -183,7 +185,7 @@ angular.module('core').controller('HomeController', [
     // This provides Authentication context.
     $scope.authentication = Authentication;
     //http://stackoverflow.com/questions/9335140/how-to-countdown-to-a-date
-    var worldCupStartDate = new Date('2014-06-12T16:00+0100');
+    var worldCupStartDate = new Date('2014-06-12T21:00+0100');
     var _second = 1000;
     var _minute = _second * 60;
     var _hour = _minute * 60;
@@ -348,6 +350,63 @@ angular.module('core').service('Menus', [function () {
     this.addMenu('topbar');
   }]);'use strict';
 //Setting up route
+angular.module('koora-admin').config([
+  '$stateProvider',
+  function ($stateProvider) {
+    // Koora admin state routing
+    $stateProvider.state('koora-admin', {
+      url: '/koora-admin',
+      templateUrl: 'modules/koora-admin/views/koora-admin.client.view.html'
+    });
+  }
+]);'use strict';
+angular.module('koora-admin').controller('KooraAdminController', [
+  '$scope',
+  'Authentication',
+  'MatchSchedule',
+  'Admin',
+  function ($scope, Authentication, MatchSchedule, AdminService) {
+    $scope.authentication = Authentication;
+    $scope.teamsNames = MatchSchedule.teamsNames;
+    $scope.matchSchedule = _.sortBy(_.flatten(_.map(MatchSchedule.schedule, function (group) {
+      return group.matches;
+    })), function (match) {
+      return match.matchId;
+    });
+    $scope.saveScore = function (matchScore) {
+      AdminService.saveScore(matchScore).success(function (res, status) {
+        console.log(res, status);
+        alert('match score saved successfully');
+      }).error(function (res, status) {
+        console.log(res, status);
+        alert('saving score failed');
+      });
+    };
+    $scope.updateStandings = function () {
+      AdminService.updateStandings().success(function (res, status) {
+        console.log(res, status);
+        alert('standings updated successfully');
+      }).error(function (res, status) {
+        console.log(res, status);
+        alert('standings update failed');
+      });
+    };
+  }
+]);'use strict';
+angular.module('koora-admin').factory('Admin', [
+  '$http',
+  function ($http) {
+    return {
+      saveScore: function (matchScore) {
+        return $http.post('/koora-admin/match-score/', matchScore);
+      },
+      updateStandings: function () {
+        return $http.post('/koora-admin/update-standings/');
+      }
+    };
+  }
+]);'use strict';
+//Setting up route
 angular.module('koora').config([
   '$stateProvider',
   function ($stateProvider) {
@@ -471,33 +530,8 @@ angular.module('koora').controller('MyPredictionsController', [
   function ($scope, $modal, Authentication, matchSchedule, scoreSheet) {
     //$scope.global = Global;
     $scope.authentication = Authentication;
-    $scope.matchSchedule = matchSchedule.schedule;
     $scope.teamsNames = matchSchedule.teamsNames;
     $scope.standings = {};
-    _.each($scope.matchSchedule, function (group) {
-      $scope.standings[group.group] = [];
-      _.each(group.matches, function (match) {
-        _.each([
-          match.team1,
-          match.team2
-        ], function (team) {
-          if ($scope.standings.length === 0 || !_.find($scope.standings[group.group], function (item) {
-              return item.team === team;
-            })) {
-            $scope.standings[group.group].push({
-              team: team,
-              played: 0,
-              won: 0,
-              drawn: 0,
-              lost: 0,
-              gf: 0,
-              ga: 0,
-              pts: 0
-            });
-          }
-        });
-      });
-    });
     function clearStanding(group) {
       for (var i = 0; i < group.length; i++) {
         var team = group[i];
@@ -505,6 +539,8 @@ angular.module('koora').controller('MyPredictionsController', [
       }
     }
     $scope.$watch('matchSchedule', function (newValue, oldValue) {
+      if (!newValue)
+        return;
       $scope.missingScores = [];
       $scope.qualifiers = {};
       var standings = $scope.standings;
@@ -565,7 +601,6 @@ angular.module('koora').controller('MyPredictionsController', [
         $scope.qualifiers[secondQualifier] = $scope.teamsNames[secondQualifier];
       }
     }, true);
-    $scope.selectedGroup = $scope.matchSchedule[0];
     var saveScoresheet = function () {
       return scoreSheet.save($scope.matchSchedule, {
         qualifiers: _.map($scope.qualifiers, function (v, k) {
@@ -605,32 +640,61 @@ angular.module('koora').controller('MyPredictionsController', [
         $scope.showMissingScores = true;
       }
     };
-    if (Authentication.user) {
-      scoreSheet.get().success(function (response) {
-        if (!response.scores)
-          return;
-        var savedScores = _.object(_.map(response.scores, function (scoreSheet) {
-            return [
-              scoreSheet.matchId,
-              {
-                team1Score: scoreSheet.team1Score,
-                team2Score: scoreSheet.team2Score
-              }
-            ];
-          }));
-        _.each($scope.matchSchedule, function (group) {
-          _.each(group.matches, function (match) {
-            match.team1Score = (savedScores[match.matchId] || {}).team1Score;
-            match.team2Score = (savedScores[match.matchId] || {}).team2Score;
+    matchSchedule.getSchedule().success(function (res) {
+      console.log(res);
+      $scope.matchSchedule = res;
+      $scope.selectedGroup = $scope.matchSchedule[0];
+      _.each($scope.matchSchedule, function (group) {
+        $scope.standings[group.group] = [];
+        _.each(group.matches, function (match) {
+          _.each([
+            match.team1,
+            match.team2
+          ], function (team) {
+            if ($scope.standings.length === 0 || !_.find($scope.standings[group.group], function (item) {
+                return item.team === team;
+              })) {
+              $scope.standings[group.group].push({
+                team: team,
+                played: 0,
+                won: 0,
+                drawn: 0,
+                lost: 0,
+                gf: 0,
+                ga: 0,
+                pts: 0
+              });
+            }
           });
         });
-        $scope.finalist1 = response.extraPredictions.finalist1;
-        $scope.finalist2 = response.extraPredictions.finalist2;
-        $scope.winner = response.extraPredictions.winner;
-      }).error(function (data, status) {
-        alert('Error loading your predictions');
       });
-    }
+      if (Authentication.user) {
+        scoreSheet.get().success(function (response) {
+          if (!response.scores)
+            return;
+          var savedScores = _.object(_.map(response.scores, function (scoreSheet) {
+              return [
+                scoreSheet.matchId,
+                {
+                  team1Score: scoreSheet.team1Score,
+                  team2Score: scoreSheet.team2Score
+                }
+              ];
+            }));
+          _.each($scope.matchSchedule, function (group) {
+            _.each(group.matches, function (match) {
+              match.team1Score = (savedScores[match.matchId] || {}).team1Score;
+              match.team2Score = (savedScores[match.matchId] || {}).team2Score;
+            });
+          });
+          $scope.finalist1 = response.extraPredictions.finalist1;
+          $scope.finalist2 = response.extraPredictions.finalist2;
+          $scope.winner = response.extraPredictions.winner;
+        }).error(function (data, status) {
+          alert('Error loading your predictions');
+        });
+      }
+    });
   }
 ]);angular.module('koora').directive('numbersOnly', function () {
   return {
@@ -658,7 +722,12 @@ angular.module('koora').controller('MyPredictionsController', [
   };
 });'use strict';
 //Menu service used for managing  menus
-angular.module('koora').service('MatchSchedule', [function () {
+angular.module('koora').service('MatchSchedule', [
+  '$http',
+  function ($http) {
+    this.getSchedule = function () {
+      return $http.get('/matches-schedule');
+    };
     // Define the menus object
     this.schedule = [
       {
@@ -666,37 +735,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 1,
-            date: '2014-06-12T16:00+0100',
+            date: '2014-06-12T21:00+0100',
             team1: 'BRA',
             team2: 'CRO'
           },
           {
             matchId: 2,
-            date: '2014-06-13T13:00+0100',
+            date: '2014-06-13T17:00+0100',
             team1: 'MEX',
             team2: 'CMR'
           },
           {
             matchId: 17,
-            date: '2014-06-17T16:00+0100',
+            date: '2014-06-17T20:00+0100',
             team1: 'BRA',
             team2: 'MEX'
           },
           {
             matchId: 18,
-            date: '2014-06-18T19:00+0100',
+            date: '2014-06-18T23:00+0100',
             team1: 'CMR',
             team2: 'CRO'
           },
           {
             matchId: 33,
-            date: '2014-06-23T17:00+0100',
+            date: '2014-06-23T21:00+0100',
             team1: 'CMR',
             team2: 'BRA'
           },
           {
             matchId: 34,
-            date: '2014-06-23T17:00+0100',
+            date: '2014-06-23T21:00+0100',
             team1: 'CRO',
             team2: 'MEX'
           }
@@ -707,37 +776,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 3,
-            date: '2014-06-13T16:00+0100',
+            date: '2014-06-13T20:00+0100',
             team1: 'ESP',
             team2: 'NED'
           },
           {
             matchId: 4,
-            date: '2014-06-13T19:00+0100',
+            date: '2014-06-13T23:00+0100',
             team1: 'CHI',
             team2: 'AUS'
           },
           {
             matchId: 20,
-            date: '2014-06-18T13:00+0100',
+            date: '2014-06-18T17:00+0100',
             team1: 'AUS',
             team2: 'NED'
           },
           {
             matchId: 19,
-            date: '2014-06-18T16:00+0100',
+            date: '2014-06-18T20:00+0100',
             team1: 'ESP',
             team2: 'CHI'
           },
           {
             matchId: 35,
-            date: '2014-06-23T13:00+0100',
+            date: '2014-06-23T17:00+0100',
             team1: 'AUS',
             team2: 'ESP'
           },
           {
             matchId: 36,
-            date: '2014-06-23T13:00+0100',
+            date: '2014-06-23T17:00+0100',
             team1: 'NED',
             team2: 'CHI'
           }
@@ -748,37 +817,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 5,
-            date: '2014-06-14T13:00+0100',
+            date: '2014-06-14T17:00+0100',
             team1: 'COL',
             team2: 'GRE'
           },
           {
             matchId: 6,
-            date: '2014-06-14T22:00+0100',
+            date: '2014-06-14T02:00+0100',
             team1: 'CIV',
             team2: 'JPN'
           },
           {
             matchId: 21,
-            date: '2014-06-19T13:00+0100',
+            date: '2014-06-19T17:00+0100',
             team1: 'COL',
             team2: 'CIV'
           },
           {
             matchId: 22,
-            date: '2014-06-19T19:00+0100',
+            date: '2014-06-19T23:00+0100',
             team1: 'JPN',
             team2: 'GRE'
           },
           {
             matchId: 37,
-            date: '2014-06-24T17:00+0100',
+            date: '2014-06-24T21:00+0100',
             team1: 'JPN',
             team2: 'COL'
           },
           {
             matchId: 38,
-            date: '2014-06-24T17:00+0100',
+            date: '2014-06-24T21:00+0100',
             team1: 'GRE',
             team2: 'CIV'
           }
@@ -789,37 +858,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 7,
-            date: '2014-06-14T16:00+0100',
+            date: '2014-06-14T20:00+0100',
             team1: 'URU',
             team2: 'CRC'
           },
           {
             matchId: 8,
-            date: '2014-06-14T19:00+0100',
+            date: '2014-06-14T23:00+0100',
             team1: 'ENG',
             team2: 'ITA'
           },
           {
             matchId: 23,
-            date: '2014-06-19T16:00+0100',
+            date: '2014-06-19T20:00+0100',
             team1: 'URU',
             team2: 'ENG'
           },
           {
             matchId: 24,
-            date: '2014-06-20T13:00+0100',
+            date: '2014-06-20T17:00+0100',
             team1: 'ITA',
             team2: 'CRC'
           },
           {
             matchId: 39,
-            date: '2014-06-24T13:00+0100',
+            date: '2014-06-24T17:00+0100',
             team1: 'ITA',
             team2: 'URU'
           },
           {
             matchId: 40,
-            date: '2014-06-24T13:00+0100',
+            date: '2014-06-24T17:00+0100',
             team1: 'CRC',
             team2: 'ENG'
           }
@@ -830,37 +899,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 9,
-            date: '2014-06-15T13:00+0100',
+            date: '2014-06-15T17:00+0100',
             team1: 'SUI',
             team2: 'ECU'
           },
           {
             matchId: 10,
-            date: '2014-06-15T16:00+0100',
+            date: '2014-06-15T20:00+0100',
             team1: 'FRA',
             team2: 'HON'
           },
           {
             matchId: 25,
-            date: '2014-06-20T16:00+0100',
+            date: '2014-06-20T20:00+0100',
             team1: 'SUI',
             team2: 'FRA'
           },
           {
             matchId: 26,
-            date: '2014-06-20T19:00+0100',
+            date: '2014-06-20T23:00+0100',
             team1: 'HON',
             team2: 'ECU'
           },
           {
             matchId: 41,
-            date: '2014-06-25T17:00+0100',
+            date: '2014-06-25T21:00+0100',
             team1: 'HON',
             team2: 'SUI'
           },
           {
             matchId: 42,
-            date: '2014-06-25T17:00+0100',
+            date: '2014-06-25T21:00+0100',
             team1: 'ECU',
             team2: 'FRA'
           }
@@ -871,37 +940,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 11,
-            date: '2014-06-15T19:00+0100',
+            date: '2014-06-15T23:00+0100',
             team1: 'ARG',
             team2: 'BIH'
           },
           {
             matchId: 12,
-            date: '2014-06-15T16:00+0100',
+            date: '2014-06-15T20:00+0100',
             team1: 'IRN',
             team2: 'NGA'
           },
           {
             matchId: 27,
-            date: '2014-06-21T13:00+0100',
+            date: '2014-06-21T17:00+0100',
             team1: 'ARG',
             team2: 'IRN'
           },
           {
             matchId: 28,
-            date: '2014-06-21T19:00+0100',
+            date: '2014-06-21T23:00+0100',
             team1: 'NGA',
             team2: 'BIH'
           },
           {
             matchId: 43,
-            date: '2014-06-21T13:00+0100',
+            date: '2014-06-21T17:00+0100',
             team1: 'NGA',
             team2: 'ARG'
           },
           {
             matchId: 44,
-            date: '2014-06-21T13:00+0100',
+            date: '2014-06-21T17:00+0100',
             team1: 'BIH',
             team2: 'IRN'
           }
@@ -912,37 +981,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 13,
-            date: '2014-06-16T13:00+0100',
+            date: '2014-06-16T17:00+0100',
             team1: 'GER',
             team2: 'POR'
           },
           {
             matchId: 14,
-            date: '2014-06-15T16:00+0100',
+            date: '2014-06-15T23:00+0100',
             team1: 'GHA',
             team2: 'USA'
           },
           {
             matchId: 29,
-            date: '2014-06-21T16:00+0100',
+            date: '2014-06-21T20:00+0100',
             team1: 'GER',
             team2: 'GHA'
           },
           {
             matchId: 30,
-            date: '2014-06-22T19:00+0100',
+            date: '2014-06-22T23:00+0100',
             team1: 'USA',
             team2: 'POR'
           },
           {
             matchId: 45,
-            date: '2014-06-26T13:00+0100',
+            date: '2014-06-26T17:00+0100',
             team1: 'USA',
             team2: 'GER'
           },
           {
             matchId: 46,
-            date: '2014-06-26T13:00+0100',
+            date: '2014-06-26T17:00+0100',
             team1: 'POR',
             team2: 'GHA'
           }
@@ -953,37 +1022,37 @@ angular.module('koora').service('MatchSchedule', [function () {
         matches: [
           {
             matchId: 15,
-            date: '2014-06-17T13:00+0100',
+            date: '2014-06-17T17:00+0100',
             team1: 'BEL',
             team2: 'ALG'
           },
           {
             matchId: 16,
-            date: '2014-06-17T19:00+0100',
+            date: '2014-06-17T23:00+0100',
             team1: 'RUS',
             team2: 'KOR'
           },
           {
             matchId: 31,
-            date: '2014-06-22T13:00+0100',
+            date: '2014-06-22T17:00+0100',
             team1: 'BEL',
             team2: 'RUS'
           },
           {
             matchId: 32,
-            date: '2014-06-22T16:00+0100',
+            date: '2014-06-22T20:00+0100',
             team1: 'KOR',
             team2: 'ALG'
           },
           {
             matchId: 47,
-            date: '2014-06-26T17:00+0100',
+            date: '2014-06-26T21:00+0100',
             team1: 'KOR',
             team2: 'BEL'
           },
           {
             matchId: 48,
-            date: '2014-06-26T17:00+0100',
+            date: '2014-06-26T21:00+0100',
             team1: 'ALG',
             team2: 'RUS'
           }
@@ -1024,7 +1093,8 @@ angular.module('koora').service('MatchSchedule', [function () {
       'RUS': 'Russia',
       'KOR': 'Korea'
     };
-  }]);'use strict';
+  }
+]);'use strict';
 angular.module('koora').factory('Pool', [
   '$http',
   function ($http) {

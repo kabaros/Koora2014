@@ -1,8 +1,11 @@
 'use strict';
 
 //Menu service used for managing  menus
-angular.module('koora').service('MatchSchedule', [
-	function() {
+angular.module('koora').service('MatchSchedule', [ '$http',
+	function($http) {
+		this.getSchedule = function() {
+			return $http.get('/matches-schedule');
+		};
 		// Define the menus object
 		this.schedule = [
 	    	{
