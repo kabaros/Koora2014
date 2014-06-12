@@ -217,7 +217,9 @@ var sendEmail = function(emailOptions){
 	//console.log("nextMatchPrediction", nextMatchPrediction);
 	//console.log("matchScores", matchesScores);
 
-	deferred.resolve({});
+	setTimeout(function(){
+		deferred.resolve({});
+	}, 1);
 
 	var predictionsMessage = [], predictionNotProvided;
 	_.each(matchesScores, function(realScore){
@@ -289,7 +291,7 @@ var sendEmail = function(emailOptions){
 		 	}, function(err, json) {
 		 	  if (err) { console.error(err); }
 		 	  console.log(json);
-		 	  deferred.resolve({});
+		 	  
 		 });
 //		 i++;
 //	}
