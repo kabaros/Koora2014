@@ -177,6 +177,7 @@ var updateUserWithStandingId = function(userId, points){
 };
 
 var matchesSchedule = _.flatten(_.pluck(require("../../models/matches-schedule").schedule, "matches"));
+var teamsNames = require("../../models/matches-schedule").teamsNames;
 
 var i = 0;
 
@@ -210,36 +211,87 @@ var sendEmail = function(emailOptions){
 	var nextMatch = findByMatchId(matchesSchedule,  _.max(matchesInCurrentUpdate) + 1);
 	var nextMatchPrediction = findByMatchId(scoresheet.scores, _.max(matchesInCurrentUpdate) + 1);
 
-	console.log("===email====", email);
-	console.log("matchesInCurrentUpdate",  matchesInCurrentUpdate)
-	console.log("nextMatch", nextMatch);
-	console.log("nextMatchPrediction", nextMatchPrediction);
-	console.log("matchScores", matchesScores);
+	//console.log("===email====", email);
+	//console.log("matchesInCurrentUpdate",  matchesInCurrentUpdate)
+	//console.log("nextMatch", nextMatch);
+	//console.log("nextMatchPrediction", nextMatchPrediction);
+	//console.log("matchScores", matchesScores);
 
 	deferred.resolve({});
 
-	if(i==0){
-		/* var sendgrid  = require('sendgrid')("app25678727@heroku.com", "yopsydme");
+	var predictionsMessage = [], predictionNotProvided;
+	_.each(matchesScores, function(realScore){
+		var prediction = findByMatchId(standings.matches, realScore.matchId);
+
+		var match = findByMatchId(matchesSchedule, realScore.matchId);
+		console.log("foundmatch", match);
+		if(!prediction.team1Score || !prediction.team2Score){
+
+			predictionsMessage.push("You did not enter a prediction for <strong>"
+				+ teamsNames[match.team1] + "</strong> vs <strong>" + teamsNames[match.team2]
+				+ "</strong> *");
+				predictionNotProvided = true;
+		} else { 
+			predictionsMessage.push("You predicted: <strong>" 
+				+ teamsNames[match.team1] + "</strong> " + prediction.team1Score
+				+ " - <strong>" + teamsNames[match.team2] + "</strong> " + prediction.team2Score
+				+ " (" + realScore.team1Score + " - " + realScore.team2Score + ")");
+		}
+	});
+
+	var nextGamePredictionMessage;
+
+	if(!nextMatchPrediction.team1Score || !nextMatchPrediction.team2Score){
+		nextGamePredictionMessage = "You have not entered a prediction for the next game. <strong>"
+			+ teamsNames[nextMatch.team1] + "</strong> vs <strong>" + teamsNames[nextMatch.team2] + "</strong>"
+	} else {
+		nextGamePredictionMessage = 
+		 "<strong>" + teamsNames[nextMatch.team1] + "</strong> "
+		 + nextMatchPrediction.team1Score
+		 + " - "
+		 +"<strong>" + teamsNames[nextMatch.team2] + "</strong> "
+		 + nextMatchPrediction.team2Score;
+	}
+
+	var htmlMessage = 'Hello <strong>' + user.displayName + '</strong>,'
+	 	  	+ '<br/><br/>'
+	 	  	+ 'Great to see you taking part of Koora2014 competition. <br/><br/> '
+	 	  	+ 'You will be able to enter scores up to 2 hours before the start of each game '
+	 	  	+ 'so there is still time for more people to join us and make a late comeback. '
+	 	  	+ 'So help us spread the word about Koora!'
+	 	  	+ '<br/><br/>'
+	 	  	+ 'You can also create Leagues for your friends and/or work colleagues to compete amongst smaller groups. '
+	 	  	+ '<br/><br/>'
+	 	  	+ '<h2>Your predictions</h2>'
+	 	  	+ predictionsMessage.join('<br/>')
+	 	  	+ '<br/><br/>'
+	 	  	+ '<h2>Your prediction for the next game</h2>'
+	 	  	+ nextGamePredictionMessage + "<br><br>"
+	 	  	+ '<h2>Current Points: '+ user.points +'</h2> '
+	 	  	+ '<a href="http://www.koora2014.com/#!/my-standings"><h4>My Standings</h4></a>' 
+	 	  	+ '<a href="http://www.koora2014.com"><h4>Koora 2014</h4></a>' 
+	 	  	+ '<a href="https://twitter.com/Koora_WorldCup"><h4>@Koora_WorldCup</h4></a>' 
+	 	  	+ (predictionNotProvided? '<br/>* you have missed entering predictions for one game and lost 1 point. Make sure to enter all your predictions and you can change them up to 2 hours from the start of the game.': '');
+
+
+	//console.log("message" + htmlMessage);
+
+//	if(i==0){
+		var sendGridUser = process.env.SENDGRID_USERNAME || "app25678727@heroku.com";
+		var sendGridPass = process.env.SENDGRID_PASSWORD || "yopsydme";
+
+		var sendgrid  = require('sendgrid')(sendGridUser, sendGridPass);
 		 	sendgrid.send({
 		 	  to:       email,
 		 	  from:     'me@kabaros.com',
 		 	  subject:  'Welcome to Koora 2014',
-		 	  html:     'Hello <strong>' + user.displayName + '</strong>,'
-		 	  	+ '<br/><br/>'
-		 	  	+ ' <h2 style="text-align: center">Don\'t forget to add your scores before the start of today\'s game: '
-		 	  	+ ' <strong>BRAZIL</strong> vs. <strong>CROATIA</strong></h2><br/><br/><br/>'
-
-		 	  	+ 'You are now allowed to update your scores up to two hours before each game (as opposed to adding all the scores before the start of the tournament).<br/><br/>'
-		 	  	+ 'You can also update your finalists until the end of the first round of the tournament.<br/><br/>'
-			  	
-		 	  	+ 'Enjoy the World Cup.'
-		 	  	+ '<h3>Current Points: 0</h3> '
+		 	  html:     htmlMessage
 		 	}, function(err, json) {
 		 	  if (err) { return console.error(err); }
 		 	  console.log(json);
-		 });*/
-		 i++;
-	}
+		 });
+//		 i++;
+//	}
 
 	return deferred.promise;
 };
