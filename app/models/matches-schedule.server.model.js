@@ -277,3 +277,45 @@ module.exports.schedule = [
 		]
 	}
 ];
+
+module.exports.teamsNames = {
+	    	'BRA' : 'Brazil',
+	    	'CRO' : 'Croatia',
+	    	'MEX' : 'Mexico',
+	    	'CMR' : 'Cameroon',
+
+	    	'ESP': 'Spain',
+	    	'NED': 'Netherlands',
+	    	'CHI': 'Chile',
+	    	'AUS': 'Australia',
+
+	    	'COL': 'Colombia',
+	    	'GRE': 'Greece',
+	    	'CIV': 'Cote d\'ivoire',
+	    	'JPN': 'Japan',
+
+	    	'URU': 'Uruguay',
+	    	'CRC': 'Costa Rica',
+	    	'ENG': 'England',
+	    	'ITA': 'Italy',
+
+	    	'SUI': 'Switzerland',
+	    	'ECU': 'Ecuador',
+	    	'FRA': 'France',
+	    	'HON': 'Honduras',
+
+	    	'ARG': 'Argentina',
+	    	'BIH': 'Bosnia',
+	    	'IRN': 'Iran',
+	    	'NGA': 'Nigeria',
+
+	    	'GER': 'Germany',
+	    	'POR': 'Portugal',
+	    	'GHA': 'Ghana',
+	    	'USA': 'USA',
+
+	    	'BEL': 'Belgium',
+	    	'ALG': 'Algeria',
+	    	'RUS': 'Russia',
+	    	'KOR': 'Korea'
+	    }

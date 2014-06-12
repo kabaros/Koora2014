@@ -123,7 +123,7 @@ exports.join = function(req, res){
  * Article middleware
  */
 exports.poolByID = function(req, res, next, name) {
-	Pool.findOne({name: name}, {password: 0, admin: 0, _id: 0, createdOn: 0}).populate('members', 'displayName predictions').exec(function(err, pool) {
+	Pool.findOne({name: name}, {password: 0, admin: 0, _id: 0, createdOn: 0}).populate('members', 'displayName predictions points').exec(function(err, pool) {
 		if (err) return next(err);
 		req.pool = pool;
 		next();

@@ -62,6 +62,10 @@ var UserSchema = new Schema({
 	},
 	providerData: {},
 	additionalProvidersData: {},
+	userStandings: {
+		type: Schema.ObjectId,
+		ref: 'UserStanding'
+	},
 	roles: {
 		type: [{
 			type: String,
