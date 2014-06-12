@@ -287,8 +287,9 @@ var sendEmail = function(emailOptions){
 		 	  subject:  'Welcome to Koora 2014',
 		 	  html:     htmlMessage
 		 	}, function(err, json) {
-		 	  if (err) { return console.error(err); }
+		 	  if (err) { console.error(err); }
 		 	  console.log(json);
+		 	  deferred.resolve({});
 		 });
 //		 i++;
 //	}
@@ -314,12 +315,7 @@ exports.updateStandings = function(req, res){
 					})
 					.then(function(userScoresheet){
 						emailOptions.userScoresheet = userScoresheet;
-						if(user.displayName!== "Mozafar")
-						 return "K";
-						else{
-							console.log(" mozafar", user._id, oldStandings);
-							return updateStandings(oldStandings || new UserStanding({user: user._id}), userScoresheet, matchScores);
-						}
+						return updateStandings(oldStandings || new UserStanding({user: user._id}), userScoresheet, matchScores);
 					}).then(function(doc){
 						emailOptions.standings = doc;
 						emailOptions.matchScores = matchScores;
