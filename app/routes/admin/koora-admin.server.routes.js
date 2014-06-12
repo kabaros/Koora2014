@@ -16,7 +16,7 @@ module.exports = function(app) {
 
 	app.route('/koora-admin/update-standings').post(
 		[function(req, res, next){
-			req.connection.setTimeout(120 * 1000);
+			req.connection.setTimeout(60 * 1000);
 			next();
 		}, users.hasAuthorization(['admin'])],
 		kooraAdmin.updateStandings

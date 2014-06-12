@@ -105,7 +105,6 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 		deferred.resolve({});
 	} else {
 		for(var i=0; i<matchesResults.length; i++){
-			console.log("inside match" + i);
 			var matchScore = matchesResults[i];
 			var userScore = findByMatchId(userScores, matchScore.matchId);
 			
@@ -153,7 +152,6 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 				deferred.reject();
 			}
 			else {
-				console.log("doc", doc);
 				deferred.resolve(doc);
 			}
 		});
@@ -188,7 +186,10 @@ var findByMatchId = function(matches, matchId){
 }
 
 var sendEmail = function(emailOptions){
+	
 	var deferred = when.defer();
+
+
 	var user = emailOptions.user,
 		standings = emailOptions.standings,
 		scoresheet = emailOptions.userScoresheet;
@@ -217,16 +218,14 @@ var sendEmail = function(emailOptions){
 	//console.log("nextMatchPrediction", nextMatchPrediction);
 	//console.log("matchScores", matchesScores);
 
-	setTimeout(function(){
-		deferred.resolve({});
-	}, 1);
+	
 
 	var predictionsMessage = [], predictionNotProvided;
 	_.each(matchesScores, function(realScore){
 		var prediction = findByMatchId(standings.matches, realScore.matchId);
 
 		var match = findByMatchId(matchesSchedule, realScore.matchId);
-		console.log("foundmatch", match);
+		
 		if(!prediction.team1Score || !prediction.team2Score){
 
 			predictionsMessage.push("You did not enter a prediction for <strong>"
@@ -282,6 +281,10 @@ var sendEmail = function(emailOptions){
 		var sendGridUser = process.env.SENDGRID_USERNAME || "app25678727@heroku.com";
 		var sendGridPass = process.env.SENDGRID_PASSWORD || "yopsydme";
 
+setTimeout(function(){
+		 deferred.resolve({});
+		}, 1);
+
 		var sendgrid  = require('sendgrid')(sendGridUser, sendGridPass);
 		 	sendgrid.send({
 		 	  to:       email,
@@ -291,12 +294,13 @@ var sendEmail = function(emailOptions){
 		 	}, function(err, json) {
 		 	  if (err) { console.error(err); }
 		 	  console.log(json);
+
 		 	  
 		 });
 //		 i++;
 //	}
-
 	return deferred.promise;
+	
 };
 
 exports.updateStandings = function(req, res){
@@ -325,7 +329,9 @@ exports.updateStandings = function(req, res){
 						if(!doc.points) return;
 
 						return updateUserWithStandingId(user._id, doc.points).then(function(){
-							sendEmail(emailOptions);
+							
+							return	sendEmail(emailOptions);
+							
 						});
 						
 					});
