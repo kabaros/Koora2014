@@ -43,7 +43,8 @@
 		"grunt-cli": "~0.1.13",
 		"glob": "~3.2.9",
 		"when": "latest",
-		"sendgrid": "1.0.4"
+		"sendgrid": "1.0.4",
+		"connect-timeout": "latest"
 	},
 	"devDependencies": {
 		"supertest": "~0.12.1",
