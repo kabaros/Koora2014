@@ -198,7 +198,7 @@ var sendEmail = function(emailOptions){
 
 	if (process.env.NODE_ENV !== 'production') { 
 		email = 'kabaros+' + user.email.replace(/@.+/, "") + '@gmail.com';
-	} else email = 'kabaros@gmail.com'
+	} else email = user.email;
 
 	var matchesInCurrentUpdate = _.pluck(standings.matches, "matchId");
 
