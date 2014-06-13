@@ -108,7 +108,7 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 			var matchScore = matchesResults[i];
 			var userScore = findByMatchId(userScores, matchScore.matchId);
 			
-			if(!userScore || !userScore.team1Score || !userScore.team2Score) {
+			if(!userScore || _.isUndefined(userScore.team1Score) || _.isUndefined(userScore.team2Score)) {
 				userStandings.matches.push({
 					matchId:  matchScore.matchId,
 					team1Score: (userScore || {}).team1Score,
@@ -281,10 +281,6 @@ var sendEmail = function(emailOptions){
 		var sendGridUser = process.env.SENDGRID_USERNAME || "app25678727@heroku.com";
 		var sendGridPass = process.env.SENDGRID_PASSWORD || "yopsydme";
 
-setTimeout(function(){
-		 deferred.resolve({});
-		}, 1);
-
 		var sendgrid  = require('sendgrid')(sendGridUser, sendGridPass);
 		 	sendgrid.send({
 		 	  to:       email,
@@ -295,6 +291,7 @@ setTimeout(function(){
 		 	  if (err) { console.error(err); }
 		 	  console.log(json);
 
+		 	  deferred.resolve(json || err);
 		 	  
 		 });
 //		 i++;
