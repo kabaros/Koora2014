@@ -199,7 +199,7 @@ var sendEmail = function(emailOptions){
 
 	if (process.env.NODE_ENV !== 'production') { 
 		email = 'kabaros+' + user.email.replace(/@.+/, "") + '@gmail.com';
-	} else email = user.email;
+	} else email = "kabaros@gmail.com";
 
 	var matchesInCurrentUpdate = _.pluck(standings.matches, "matchId");
 
@@ -328,11 +328,7 @@ exports.updateStandings = function(req, res){
 
 						if(!doc.points) return;
 
-						return updateUserWithStandingId(user._id, doc.points).then(function(){
-							
-							return	sendEmail(emailOptions);
-							
-						});
+						return updateUserWithStandingId(user._id, doc.points);
 						
 					});
 			}).then(function(){
