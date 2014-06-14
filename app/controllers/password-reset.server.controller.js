@@ -12,7 +12,7 @@ var sendEmail = function(user, resetLink, callback){
 	var toEmail;
 		if (process.env.NODE_ENV !== 'production') { 
 			toEmail = 'kabaros+' + user.email.replace(/@.+/, "") + '@gmail.com';
-		} else toEmail = user.email.toEmail;
+		} else toEmail = user.email;
 		
 		console.log("email to be sent for reset: " + toEmail);
 
@@ -34,6 +34,7 @@ var sendEmail = function(user, resetLink, callback){
 		 	  	+ "<small>Reply to this email for any further information or help.</small>"
 		 	}, function(err, json) {
 		 	  if (err) { console.error(err); }
+		 	  console.log(json);
 		 	  callback();
 		 });
 };
