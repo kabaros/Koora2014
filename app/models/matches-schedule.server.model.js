@@ -81,7 +81,7 @@ module.exports.schedule = [
 				team2: 'GRE',
 			}, {
 				matchId: 6,
-				date: '2014-06-14T02:00+0100',
+				date: '2014-06-15T02:00+0100',
 				team1: 'CIV',
 				team2: 'JPN',
 			}, {
