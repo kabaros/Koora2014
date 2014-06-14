@@ -14,6 +14,11 @@ module.exports = function(app) {
 		kooraAdmin.postMatchScore
 	);
 
+	app.route('/koora-admin/send-emails').get(
+		users.hasAuthorization(['admin']),
+		kooraAdmin.sendEmails
+	);
+
 	app.route('/koora-admin/update-standings').post(
 		[function(req, res, next){
 			req.connection.setTimeout(120 * 1000);

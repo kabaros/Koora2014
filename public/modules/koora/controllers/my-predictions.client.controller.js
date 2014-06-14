@@ -129,7 +129,7 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 		//var successSaveModal = $modal.open({title: 'My Title', content: 'My Content', show: false});
 
 		$scope.checkMissingScores = function(){
-	    	//if($scope.missingScores.length <8 && $scope.finalist1 && $scope.finalist2 && $scope.winner){
+	    	if( $scope.finalist1 && $scope.finalist2 && $scope.winner){
 	    		$scope.savingInProgress = true;
 	    		$scope.showMissingScores = false;
 	    		$scope.showMissingFinalists = false;
@@ -143,9 +143,9 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 						$scope.savingInProgress = false;
 						alert("error while saving");
 					});
-	    	//} else {
-	    	//	$scope.showMissingScores = true;
-	    	//}
+	    	} else {
+	    		$scope.showMissingScores = true;
+	    	}
 	    }
 
 	    matchSchedule.getSchedule().success(function(res){

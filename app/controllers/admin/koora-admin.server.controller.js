@@ -5,13 +5,20 @@ var mongoose = require('mongoose'),
 	when = require('when'),
 	_ = require('lodash'),
 	Scoresheet = mongoose.model('Scoresheet'),
+	EmailUpdate = mongoose.model('EmailUpdate'),
 	User = mongoose.model('User'),
 	UserStanding = mongoose.model('UserStanding'),
 	MatchScore = mongoose.model('MatchScore');
 
-/**
- * Module dependencies.
- */
+
+exports.emailsPage = function(req, res){
+	EmailUpdate.find({}, function(err, emailUpdates){
+		res.render('admin/koora-admin-emails', {
+			emails: emailUpdates
+		});
+	});
+}
+
 exports.index = function(req, res) {
 	res.render('admin/koora-admin', {
 		user: req.user || null
@@ -183,23 +190,54 @@ var findByMatchId = function(matches, matchId){
 	return _.find(matches, function(match){
 		return match.matchId === matchId;
 	});
+};
+
+module.exports.sendEmails = function(req, res){
+	
+
+
+	EmailUpdate.find({isSent: false}, function(err, emails){
+		_.each(emails, function(email){
+			var toEmail;
+			console.log("email: " + email.toEmail);
+			if (process.env.NODE_ENV !== 'production') { 
+				toEmail = 'kabaros+' + email.toEmail.replace(/@.+/, "") + '@gmail.com';
+			} else toEmail = email.toEmail;
+			
+			// if(i==0){
+				var sendGridUser = process.env.SENDGRID_USERNAME || "app25678727@heroku.com";
+				var sendGridPass = process.env.SENDGRID_PASSWORD || "yopsydme";
+
+				var sendgrid  = require('sendgrid')(sendGridUser, sendGridPass);
+				 	sendgrid.send({
+				 	  to:       toEmail,
+				 	  from:     'me@kabaros.com',
+				 	  subject:  'Welcome to Koora 2014',
+				 	  html:     email.emailBody,
+				 	}, function(err, json) {
+				 	  if (err) { console.error(err); }
+				 	  console.log(json);
+				 });
+			// 	 i++;
+			// }
+
+			new EmailUpdate(email).remove();
+		});
+
+		res.jsonp(200, {emailsSent: true});
+
+		
+	});
 }
 
-var sendEmail = function(emailOptions){
+var storeEmail = function(emailOptions){
 	
 	var deferred = when.defer();
-
 
 	var user = emailOptions.user,
 		standings = emailOptions.standings,
 		scoresheet = emailOptions.userScoresheet;
 
-
-	var email;
-
-	if (process.env.NODE_ENV !== 'production') { 
-		email = 'kabaros+' + user.email.replace(/@.+/, "") + '@gmail.com';
-	} else email = "kabaros@gmail.com";
 
 	var matchesInCurrentUpdate = _.pluck(standings.matches, "matchId");
 
@@ -242,7 +280,7 @@ var sendEmail = function(emailOptions){
 
 	var nextGamePredictionMessage;
 
-	if(!nextMatchPrediction.team1Score || !nextMatchPrediction.team2Score){
+	if(!nextMatchPrediction || _.isUndefined(nextMatchPrediction.team1Score) || _.isUndefined(nextMatchPrediction.team2Score)){
 		nextGamePredictionMessage = "You have not entered a prediction for the next game. <strong>"
 			+ teamsNames[nextMatch.team1] + "</strong> vs <strong>" + teamsNames[nextMatch.team2] + "</strong>"
 	} else {
@@ -259,9 +297,7 @@ var sendEmail = function(emailOptions){
 	 	  	+ 'Great to see you taking part of Koora2014 competition. <br/><br/> '
 	 	  	+ 'You will be able to enter scores up to 2 hours before the start of each game '
 	 	  	+ 'so there is still time for more people to join us and make a late comeback. '
-	 	  	+ 'So help us spread the word about Koora!'
-	 	  	+ '<br/><br/>'
-	 	  	+ 'You can also create Leagues for your friends and/or work colleagues to compete amongst smaller groups. '
+	 	  	+ 'So help spread the word about Koora!'
 	 	  	+ '<br/><br/>'
 	 	  	+ '<h2>Your predictions</h2>'
 	 	  	+ predictionsMessage.join('<br/>')
@@ -272,32 +308,23 @@ var sendEmail = function(emailOptions){
 	 	  	+ '<a href="http://www.koora2014.com/#!/my-standings"><h4>My Standings</h4></a>' 
 	 	  	+ '<a href="http://www.koora2014.com"><h4>Koora 2014</h4></a>' 
 	 	  	+ '<a href="https://twitter.com/Koora_WorldCup"><h4>@Koora_WorldCup</h4></a>' 
-	 	  	+ (predictionNotProvided? '<br/>* you have missed entering predictions for one game and lost 1 point. Make sure to enter all your predictions and you can change them up to 2 hours from the start of the game.': '');
+	 	  	+ (predictionNotProvided? '<br/>* you have missed entering predictions for one game and lost 1 point. Make sure to enter all your predictions and you can change them up to 2 hours from the start of the game.': '')
+	 	  	+ '<br/>** Apologies if you received an email with wrong scores yesterday. Don\'t worry, we\'ve got your scores 100% correct on the site!';
 
 
-	//console.log("message" + htmlMessage);
-
-//	if(i==0){
-		var sendGridUser = process.env.SENDGRID_USERNAME || "app25678727@heroku.com";
-		var sendGridPass = process.env.SENDGRID_PASSWORD || "yopsydme";
-
-		var sendgrid  = require('sendgrid')(sendGridUser, sendGridPass);
-		 	sendgrid.send({
-		 	  to:       email,
-		 	  from:     'me@kabaros.com',
-		 	  subject:  'Welcome to Koora 2014',
-		 	  html:     htmlMessage
-		 	}, function(err, json) {
-		 	  if (err) { console.error(err); }
-		 	  console.log(json);
-
-		 	  deferred.resolve(json || err);
-		 	  
-		 });
-//		 i++;
-//	}
+	 	 var emailUpdate = new EmailUpdate({
+	 	 	user: user._id,
+	 	 	matchId: _.max(matchesInCurrentUpdate),
+	 	 	toEmail: user.email,
+	 	 	emailBody: htmlMessage
+	 	 });
+	 	 emailUpdate.save(function(err, doc){
+	 	 	if(err){
+	 	 		console.log("error while saving email", err);
+	 	 	}
+	 	 	deferred.resolve(doc|| {});
+	 	 })
 	return deferred.promise;
-	
 };
 
 exports.updateStandings = function(req, res){
@@ -310,7 +337,7 @@ exports.updateStandings = function(req, res){
 		.then(getUsers)
 		.then(function(users){
 			return when.map(users, function(user){
-				var oldStandings, emailOptions = {user: user};
+				var oldStandings, emailOptions = {};
 				return getUserStandings(user._id)
 					.then(function(standings){
 						oldStandings = standings;
@@ -325,7 +352,10 @@ exports.updateStandings = function(req, res){
 
 						if(!doc.points) return;
 
-						return updateUserWithStandingId(user._id, doc.points);
+						return updateUserWithStandingId(user._id, doc.points).then(function(doc){
+							emailOptions.user = doc;
+							return storeEmail(emailOptions)
+						});
 						
 					});
 			}).then(function(){
