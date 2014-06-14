@@ -199,11 +199,11 @@ module.exports.sendEmails = function(req, res){
 	EmailUpdate.find({isSent: false}, function(err, emails){
 		_.each(emails, function(email){
 			var toEmail;
-			console.log("email: " + email.toEmail);
+			
 			if (process.env.NODE_ENV !== 'production') { 
 				toEmail = 'kabaros+' + email.toEmail.replace(/@.+/, "") + '@gmail.com';
 			} else toEmail = email.toEmail;
-			
+			console.log("email: " + toEmail);
 			// if(i==0){
 				var sendGridUser = process.env.SENDGRID_USERNAME || "app25678727@heroku.com";
 				var sendGridPass = process.env.SENDGRID_PASSWORD || "yopsydme";

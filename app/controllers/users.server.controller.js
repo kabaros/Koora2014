@@ -6,6 +6,7 @@
 var mongoose = require('mongoose'),
 	passport = require('passport'),
 	User = mongoose.model('User'),
+	PasswordReset = mongoose.model('PasswordReset'),
 	Pool = mongoose.model('Pool'),
 	when = require('when'),
 	Scoresheet = mongoose.model('Scoresheet'),
@@ -203,11 +204,10 @@ exports.changePassword = function(req, res, next) {
 	// Init Variables
 	var passwordDetails = req.body;
 	var message = null;
-
 	if (req.user) {
 		User.findById(req.user.id, function(err, user) {
 			if (!err && user) {
-				if (user.authenticate(passwordDetails.currentPassword)) {
+				if (user.authenticate(passwordDetails.currentPassword) || req.isPasswordReset) {
 					if (passwordDetails.newPassword === passwordDetails.verifyPassword) {
 						user.password = passwordDetails.newPassword;
 
@@ -244,6 +244,25 @@ exports.changePassword = function(req, res, next) {
 				});
 			}
 		});
+	} else if(!req.user && passwordDetails.resetKey){
+		var threeHoursAgo = new Date();
+		threeHoursAgo.setHours(threeHoursAgo.getHours()-1);
+		
+		PasswordReset.findOne({_id : passwordDetails.resetKey,
+				email: passwordDetails.email,
+				createdOn: {$gte: threeHoursAgo.toISOString()}
+		}).populate('user').exec(function(err, doc){
+			if(err || !doc || !doc.user){
+				if(err) console.log("reset password error", err);
+				res.send(400, {message: 'Reset key and email do not match'})
+			} else {
+				console.log("reset password found match", doc.user);
+				req.user = doc.user;
+				req.isPasswordReset = true;
+				exports.changePassword(req, res, next);
+			}
+		});
+
 	} else {
 		res.send(400, {
 			message: 'User is not signed in'

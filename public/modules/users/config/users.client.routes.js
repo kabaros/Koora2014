@@ -17,6 +17,10 @@ angular.module('users').config(['$stateProvider',
 			url: '/settings/accounts',
 			templateUrl: 'modules/users/views/settings/social-accounts.client.view.html'
 		}).
+		state('reset-password', {
+			url: '/reset-password?resetKey',
+			templateUrl: 'modules/users/views/reset-password.client.view.html'
+		}).
 		state('signup', {
 			url: '/signup?returnUrl',
 			templateUrl: 'modules/users/views/signup.client.view.html'
