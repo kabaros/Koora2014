@@ -264,7 +264,7 @@ var storeEmail = function(emailOptions){
 
 		var match = findByMatchId(matchesSchedule, realScore.matchId);
 		
-		if(!prediction.team1Score || !prediction.team2Score){
+		if(_.isUndefined(prediction.team1Score) || _.isUndefined(prediction.team2Score)){
 
 			predictionsMessage.push("You did not enter a prediction for <strong>"
 				+ teamsNames[match.team1] + "</strong> vs <strong>" + teamsNames[match.team2]
