@@ -10,3 +10,4 @@ app/tests/coverage/
 public/assets/color
 public/assets/js
 public/assets/img
+config/env/development.js
