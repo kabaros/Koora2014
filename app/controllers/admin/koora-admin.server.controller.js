@@ -39,6 +39,20 @@ exports.postMatchScore = function(req, res){
 	});
 };
 
+exports.getMatchScores = function(req, res){
+	var matchScore = new MatchScore(req.body);
+	MatchScore.find({}, function(err, matchScores){
+		if(err){
+			return res.send(400, {
+				message: helpers.getErrorMessage(err)
+			});
+		}
+		else {
+			res.jsonp(matchScores);
+		}
+	});
+};
+
 var getUsers = function(){
 	var deferred = when.defer();
 

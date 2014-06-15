@@ -14,6 +14,11 @@ module.exports = function(app) {
 		kooraAdmin.postMatchScore
 	);
 
+	app.route('/koora-admin/match-score').get(
+		users.hasAuthorization(['admin']),
+		kooraAdmin.getMatchScores
+	);
+
 	app.route('/koora-admin/send-emails').get(
 		users.hasAuthorization(['admin']),
 		kooraAdmin.sendEmails

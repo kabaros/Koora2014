@@ -10,6 +10,10 @@ angular.module('koora-admin').factory('Admin', [ '$http',
 
 			updateStandings: function() {
 				return $http.post('/koora-admin/update-standings/');
+			},
+
+			getMatchScores: function(){
+				return $http.get('/koora-admin/match-score/');
 			}
 		};
 	}

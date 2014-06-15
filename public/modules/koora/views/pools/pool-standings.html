@@ -10,8 +10,15 @@
             <tbody class="member-details">
         		<tr class="overview-row" data-ng-hide="member.showMemberDetails" ng-click="showMemberDetails(member)" data-ng-repeat-start="member in selectedPool.members | orderBy:'points':true" >
         			<td>
+                        <span ng-if="!member.showMemberDetails" class="glyphicon glyphicon-chevron-down">
+                                    </span>
+                        <span ng-if="member.showMemberDetails" class="glyphicon glyphicon-chevron-up">
+                        </span>
         			</td>
-                    <td>{{member.displayName}}</td>
+                    <td>
+
+                        {{member.displayName}}
+                    </td>
         			<td>{{member.points}}</td>
                     <td>
                         <div data-ng-show="member.predictions.winner">
@@ -34,7 +41,7 @@
                         <div class="row text-left">
                             
                             <div class="col-md-offset-1 col-md-12">
-                                <h2 data-ng-click="member.showMemberDetails=!member.showMemberDetails" >{{member.displayName}} ({{member.points}} points)</h2>
+                                <h2 class="name-header" data-ng-click="member.showMemberDetails=!member.showMemberDetails" >{{member.displayName}} ({{member.points}} points)</h2>
                                 <hr>
                             </div>
                         </div>

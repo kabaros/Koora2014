@@ -4,35 +4,42 @@
 			Update Standings
 		</button>
 	</div>
-	<form class="form-horizontal" role="form">
-		<div data-ng-repeat="match in matchSchedule">
-	    	<div class="row match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}}</div class="match-date">
-	    		
-    		<div class="form-group">
-    			<label for="team1Score-{{match.matchId}}" class="col-md-2">
-    				<img class="standing-flag" data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
-    				{{teamsNames[match.team1]}}
-    			</label>
-    			<div>
-    				<input id="team1Score-{{match.matchid}}" placeholder={{match.team1}} ng-model="match.team1Score" numbers-only>
-    			</div> 
-    		</div>
+	
+        <div class="row">
+    		<div class="col-md-4" data-ng-repeat="match in matchSchedule">
+                <form class="form-horizontal" role="form">            
+                    <div class="row">
+            	    	<div class="match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}}</div class="match-date">
+            	    		
+                		<div class="form-group">
+                			<label for="team1Score-{{match.matchId}}" class="col-md-3">
+                				<img class="standing-flag" data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
+                				{{teamsNames[match.team1]}}
+                			</label>
+                			<div>
+                				<input data-ng-if="!match.disabled" id="team1Score-{{match.matchid}}" placeholder={{match.team1}} ng-model="match.team1Score" numbers-only>
+                                <span data-ng-if="match.disabled">{{match.team1Score}}</span>
+                			</div> 
+                		</div>
 
-    		<div class="form-group">
-    			<label for="team2Score-{{match.matchId}}" class="col-md-2">
-    				<img class="standing-flag" data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
-    				{{teamsNames[match.team2]}}
-    			</label>
-    			<div>
-    			<input id="team2Score-{{match.matchid}}" placeholder={{match.team2}} ng-model="match.team2Score" numbers-only>
-    			</div> 
-    		</div>
-    			<div class="form-group">
-    				<div class="col-md-2 col-md-offset-2">
-	    			<button data-ng-disabled="!authentication.user" data-ng-click="saveScore(match)" type="button btn-inline" class="btn btn-success">Save Scores</button>
-	    		</div>
-    		</div>
-	    		
-	    </div>
-	</form>
+                		<div class="form-group">
+                			<label for="team2Score-{{match.matchId}}" class="col-md-3">
+                				<img class="standing-flag" data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
+                				{{teamsNames[match.team2]}}
+                			</label>
+                			<div>
+                			<input data-ng-if="!match.disabled" id="team2Score-{{match.matchid}}" placeholder={{match.team2}} ng-model="match.team2Score" numbers-only>
+                            <span data-ng-if="match.disabled">{{match.team2Score}}</span>
+                			</div> 
+                		</div>
+                			<div class="form-group">
+                				<div class="col-md-2 col-md-offset-2">
+            	    			<button data-ng-disabled="!authentication.user" data-ng-hide="match.disabled" data-ng-click="saveScore(match)" type="button btn-inline" class="btn btn-success">Save Scores</button>
+            	    		</div>
+                		</div>
+                    </div>
+                </form>    	    		
+    	    </div>
+        </div>
+
 </section>

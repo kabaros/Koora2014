@@ -146,7 +146,9 @@ img.standing-flag {
 .standings-table {
 	text-align: center;
 }
-.standings-table .member-details tr.overview-row {
+.standings-table .member-details tr.overview-row,
+.standings-table .more-details .name-header
+ {
 	cursor: pointer;
 }
 .standings-table .member-details tr.more-details {
