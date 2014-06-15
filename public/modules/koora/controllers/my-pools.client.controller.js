@@ -17,7 +17,7 @@ angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams
 		}
 
 		$scope.showMemberDetails = function(member){
-			console.log("here")
+			
 			if(!member.stats){
 				Pool.getUserStats(member.username)
 				.success(function(doc, status){
