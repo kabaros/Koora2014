@@ -11,7 +11,7 @@
 				<textarea placeholder="body" data-ng-model="emailToSend.bodyCustomMessage">
 				</textarea>
 			</div>
-			<button data-ng-disable="emailToSend.subject.length === 0 || emailToSend.bodyCustomMessage.length === 0" ng-click="generateEmails()" class="btn btn-primary btn-large">
+			<button data-ng-disabled="!emailToSend.subject || !emailToSend.bodyCustomMessage" ng-click="generateEmails()" class="btn btn-primary btn-large">
 				Generate Emails
 			</button>
 		</form>
@@ -26,6 +26,9 @@
 			<strong>{{email.toEmail}}</strong>
 			<br>
 			{{email.subject}}
+			<span title="sent" data-ng-if="email.isSent">
+				<span class="glyphicon glyphicon-ok"></span>
+			</span>
 		</div>
 		<div class="col-md-6" data-ng-bind-html="renderHtml(email.emailBody)">
 		</div>
@@ -34,4 +37,15 @@
 			<hr>
 		</div>
 	</div>
+	<input data-ng-model="emailPassword" placeholder="password"></input>
+	<div class="loader" data-ng-show="savingInProgress">
+        </div>
+<button data-ng-show="!savingInProgress" data-ng-disabled="emailPassword !== 'brazil'" data-ng-click="sendEmails()" class="btn btn-primary btn-large">
+	Send Emails
+</button>
+<div data-ng-show="emailSentResponse">
+	Emails not sent: {{emailSentResponse.emailsWithErrors}}<br/>
+	Emails sent: {{emailSentResponse.emailsSent}}<br/>
+	Emails sent and DB updated: {{emailSentResponse.emailsSentAndDbUpdated}}
+</div>
 </section>

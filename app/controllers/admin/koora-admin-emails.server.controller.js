@@ -183,11 +183,6 @@ module.exports.generateEmails = function(req, res){
 			});
 		});
 	});
-
-	// when.all(_.map(users, function(){
-	// 	storeEmail(emailOptions);
-	// }))
-	// res.jsonp(emails);
 };
 
 var sendGridUser = process.env.SENDGRID_USERNAME || 'app25678727@heroku.com';
@@ -197,6 +192,8 @@ var sendgrid  = require('sendgrid')(sendGridUser, sendGridPass);
 
 
 module.exports.sendEmails = function(req, res){
+	console.log('sending emails');
+	var emailsSent = 0, emailsWithErrors = 0, emailsSentAndDbUpdated = 0;
 	EmailUpdate.find({isSent: false}, function(err, emails){
 		return when.map(_.map(emails, function(email){
 			var deferred = when.defer();
@@ -206,28 +203,36 @@ module.exports.sendEmails = function(req, res){
 				toEmail = 'kabaros+' + email.toEmail.replace(/@.+/, '') + '@gmail.com';
 			} else toEmail = email.toEmail;
 			
-			console.log('email: ' + toEmail);
+			console.log('sending email to ' + toEmail);
 				
 		 	sendgrid.send({
 			 	  to:       toEmail,
 			 	  from:     'me@kabaros.com',
-			 	  subject:  'Welcome to Koora 2014',
+			 	  subject:  email.subject,
 			 	  html:     email.emailBody,
 			 	}, function(err, json) {
 			 	  if (err) {
-			 	   	console.error(err); 
+			 	   	console.error(err);
+			 	   	emailsWithErrors++;
 			 	   }
-			 	   var emailUpdate = new EmailUpdate(email);
-			 	   emailUpdate.opResponse = json;
-			 	   emailUpdate.isSent = true;
-			 	   emailUpdate.save(function(err, doc){
-			 	   		deferred.resolve(true);
+			 	   console.log(json);
+			 	   emailsSent++;
+			 	   EmailUpdate.findByIdAndUpdate(email._id, {
+			 	   	isSent: true,
+			 	   	opResponse: json
+			 	   }, function(){
+			 	   	emailsSentAndDbUpdated++;
+			 	   	deferred.resolve(email);
 			 	   });
 			 });
 			return deferred.promise;
 			
-		})).then(function(){
-			res.jsonp(200, {allEmailsSent: true});		
+		})).then(function(emails){
+			res.jsonp(200, {
+				emailsSent: emailsSent,
+				emailsWithErrors: emailsWithErrors,
+				emailsSentAndDbUpdated: emailsSentAndDbUpdated
+			});		
 		});
 	});
 };

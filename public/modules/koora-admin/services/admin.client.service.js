@@ -20,6 +20,10 @@ angular.module('koora-admin').factory('Admin', [ '$http',
 				return $http.get('/koora-admin/email-updates/');
 			},
 
+			sendEmails: function(){
+				return $http.post('/koora-admin/email-updates/send');
+			},
+
 			generateEmails: function(emailOptions){
 				return $http.post('/koora-admin/email-updates/generate', emailOptions);
 			}

@@ -5,15 +5,15 @@ angular.module('koora-admin').controller('KooraAdminController', ['$scope', '$sc
 		$scope.authentication = Authentication;
 		$scope.teamsNames = MatchSchedule.teamsNames;
 		
-		if(!Authentication.user || !Authentication.user. roles || !_.contains(Authentication.user.roles, "admin")){
-			$location.path("/");
+		if(!Authentication.user || !Authentication.user. roles || !_.contains(Authentication.user.roles, 'admin')){
+			$location.path('/');
 		}
 
 		var findByMatchId = function(matches, matchId){
 			return _.find(matches, function(match){
 				return match.matchId === matchId;
 			});
-		}
+		};
 
 		$scope.saveScore = function(matchScore){
 			$scope.savingInProgress = true;
@@ -57,7 +57,22 @@ angular.module('koora-admin').controller('KooraAdminController', ['$scope', '$sc
 					console.log(res, status);
 					alert('error loading emails');
 				});
-		}
+		};
+
+		$scope.sendEmails = function(){
+			$scope.emailPassword = '';
+			$scope.savingInProgress = true;
+			AdminService.sendEmails()
+				.success(function(res, status){
+					$scope.emailSentResponse = res;
+					$scope.savingInProgress = false;
+				})
+				.error(function(res, status){
+					console.log(res, status);
+					alert('error sending emails');
+					$scope.savingInProgress = false;
+				});
+		};
 
 		$scope.generateEmails = function(){
 			AdminService.generateEmails($scope.emailToSend)
@@ -68,7 +83,7 @@ angular.module('koora-admin').controller('KooraAdminController', ['$scope', '$sc
 					console.log(res, status);
 					alert('error generating emails');
 				});
-		}
+		};
 
 		AdminService.getMatchScores()
 			.success(function(scores){
