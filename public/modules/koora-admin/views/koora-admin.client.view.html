@@ -9,7 +9,7 @@
     		<div class="col-md-4" data-ng-repeat="match in matchSchedule">
                 <form class="form-horizontal" role="form">            
                     <div class="row">
-            	    	<div class="match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}}</div class="match-date">
+            	    	<div class="match-date">{{match.date | date: 'EEEE dd-MM-yyyy HH:mm'}} ({{match.matchId}})</div class="match-date">
             	    		
                 		<div class="form-group">
                 			<label for="team1Score-{{match.matchId}}" class="col-md-3">

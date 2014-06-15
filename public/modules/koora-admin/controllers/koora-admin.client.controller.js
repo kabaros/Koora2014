@@ -21,7 +21,6 @@ angular.module('koora-admin').controller('KooraAdminController', ['$scope', '$sc
 				.success(function(res, status){
 					console.log(res, status);
 					matchScore.disabled = true;
-					alert('match score saved successfully');
 					$scope.savingInProgress = false;
 				})
 				.error(function(res, status){
