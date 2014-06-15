@@ -216,7 +216,7 @@ module.exports.schedule = [
 				team2: 'POR',
 			},{
 				matchId: 14,
-				date: '2014-06-15T23:00+0100',
+				date: '2014-06-16T23:00+0100',
 				team1: 'GHA',
 				team2: 'USA',
 			},{
