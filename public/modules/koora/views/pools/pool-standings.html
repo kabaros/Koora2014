@@ -10,9 +10,9 @@
             <tbody class="member-details">
         		<tr class="overview-row" data-ng-hide="member.showMemberDetails" ng-click="showMemberDetails(member)" data-ng-repeat-start="member in selectedPool.members | orderBy:'points':true" >
         			<td>
-                        <span ng-if="!member.showMemberDetails" class="glyphicon glyphicon-chevron-down">
+                        <span ng-if="!member.showMemberDetails" class="glyphicon glyphicon-chevron-right">
                                     </span>
-                        <span ng-if="member.showMemberDetails" class="glyphicon glyphicon-chevron-up">
+                        <span ng-if="member.showMemberDetails" class="glyphicon glyphicon-chevron-down">
                         </span>
         			</td>
                     <td>
