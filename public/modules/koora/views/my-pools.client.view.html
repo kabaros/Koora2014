@@ -1,5 +1,4 @@
 <div data-ng-controller="MyPoolsController">
-
 	<h2 data-ng-show="!groupByName && authentication.user">My Standings</h2>
 	<h2 data-ng-show="groupByName && authentication.user && groupFound">{{poolToJoin.displayName}}</h2>
 	<hr/>
@@ -68,7 +67,7 @@
 
 			<div class="row">
 				<br/>
-				<div data-ng-show="isMemberOfGroup && groupFound" data-ng-include="'/modules/koora/views/pools/pool-standings.html'">
+				<div class="col-md-12" data-ng-show="isMemberOfGroup && groupFound" data-ng-include="'/modules/koora/views/pools/pool-standings.html'">
 				</div>
 			</div>
 			

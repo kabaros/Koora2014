@@ -13,7 +13,6 @@ var getMatchSchedule = function(){
 }
 
 var matchesSchedule = _.flatten(_.pluck(require("../models/matches-schedule").schedule, "matches"));
-console.log("matchesSchedule>>>", matchesSchedule);
 /**
  * Create a Scoresheet
  */

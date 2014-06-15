@@ -1,34 +1,134 @@
-<div class="standings-table">
+<div class="standings-table pool">
 	<div>
-		<table class="table table-striped">
+		<table class="table table-condensed">
     		<th>
     			<td></td>
     			<td>Points</td>
     			<td>Predicted Final</td>
     			<td>Predicted Winner</td>
     		</th>
-    		<tr data-ng-repeat="member in selectedPool.members | orderBy:'points':true">
-    			<td>
-    				
-    			</td>
-                <td>{{member.displayName}}</td>
-    			<td>{{member.points}}</td>
-                <td>
-                    <div data-ng-show="member.predictions.winner">
-                        <img ng-attr-title="{{teamsNames[member.predictions.finalist1]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist1.toLowerCase()}}.png" />
-                          
-                        <img title="{{teamsNames[member.predictions.finalist2]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist2.toLowerCase()}}.png" />
-                    </div>
-                </td>
-    			<td>
-                    <div data-ng-show="member.predictions.winner">
-                        <img title="{{teamsNames[member.predictions.winner]}}" data-ng-src="/assets/flags/{{member.predictions.winner.toLowerCase()}}.png" />
-                    </div>
-                    <div data-ng-show="!member.predictions.winner">
-                        <small>Still haven't entered their predictions</small>
-                    </div>
-                </td>
-    		</tr>
+            <tbody class="member-details">
+        		<tr class="overview-row" data-ng-hide="member.showMemberDetails" ng-click="showMemberDetails(member)" data-ng-repeat-start="member in selectedPool.members | orderBy:'points':true" >
+        			<td>
+        			</td>
+                    <td>{{member.displayName}}</td>
+        			<td>{{member.points}}</td>
+                    <td>
+                        <div data-ng-show="member.predictions.winner">
+                            <img ng-attr-title="{{teamsNames[member.predictions.finalist1]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist1.toLowerCase()}}.png" />
+                              
+                            <img title="{{teamsNames[member.predictions.finalist2]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist2.toLowerCase()}}.png" />
+                        </div>
+                    </td>
+        			<td>
+                        <div data-ng-show="member.predictions.winner">
+                            <img title="{{teamsNames[member.predictions.winner]}}" data-ng-src="/assets/flags/{{member.predictions.winner.toLowerCase()}}.png" />
+                        </div>
+                        <div data-ng-show="!member.predictions.winner">
+                            <small>Still haven't entered their predictions</small>
+                        </div>
+                    </td>
+        		</tr>
+                <tr class="more-details"  data-ng-if="member.showMemberDetails" data-ng-repeat-end>
+                    <td colspan="5">
+                        <div class="row text-left">
+                            
+                            <div class="col-md-offset-1 col-md-12">
+                                <h2 data-ng-click="member.showMemberDetails=!member.showMemberDetails" >{{member.displayName}} ({{member.points}} points)</h2>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row text-left">
+                             <div class="col-md-2 col-md-offset-1">
+                                <h4>Next Predictions</h4>
+                            </div>
+                            <div data-ng-repeat="match in member.stats.nextMatches.slice(0,3) | orderBy:matchId " class="col-md-3 predictions-box">
+                                <div class="row">
+                                     <div class="col-md-6">
+                                            <img class="standing-flag" title="{{teamsNames[match.team1]}}" data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{match.team1Score}}
+                                        </div>
+                                </div>
+                                <div class="row">
+                                     <div class="col-md-6">
+                                            <img class="standing-flag" title="{{teamsNames[match.team2]}}" data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{match.team2Score}}
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row text-left">
+                            <div class="col-md-10 col-md-offset-1">
+
+                                <h5 class="previous-predictions" ng-click="member.showPreviousPredictions= !member.showPreviousPredictions">
+
+                                    <span ng-if="!member.showPreviousPredictions" class="glyphicon glyphicon-plus-sign">
+                                    </span><span ng-if="member.showPreviousPredictions" class="glyphicon glyphicon-minus-sign">
+                                    </span>
+                                    Previous Predictions
+
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="row" data-ng-show="member.showPreviousPredictions">
+                            <div class="col-md-12">
+                                <div data-ng-repeat="match in member.stats.userMatches" class="col-md-3 col-md-offset-1 predictions-box">
+                                    <div class="row"></div>
+                                   <div class="row">
+                                        <div class="col-md-5">
+                                            <img class="flag" title="{{teamsNames[match.team1]}}" data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
+                                        </div>
+                                        <div class="col-md-1">
+                                            {{match.team1Score}}
+                                            
+                                        </div>
+                                        <div class="col-md-1">
+                                            ({{match.actualTeam1Score}}) 
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="row">
+                                         <div class="col-md-5">
+                                            <img title="{{teamsNames[match.team2]}}" data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
+                                        </div>
+                                        <div class="col-md-1">
+                                            {{match.team2Score}}
+
+                                        </div>
+                                        <div class="col-md-1">
+                                            ({{match.actualTeam2Score}}) 
+                                        </div>
+                                         <div class="col-md-1">
+
+                                                    <small class="no-prediction" ng-if="angular.isUndefined(match.team1Score)">
+                                                         no prediction <span class="pts-label pts-1">-1</span>
+                                                    </small>
+                                                    <span class="pts-label pts-1" ng-if="match.points === -1">
+                                                        -1
+                                                    </span>
+                                                    <span class="pts-label pts3" ng-if="match.points === 3">
+                                                        +3
+                                                    </span>
+                                                    <span class="pts-label pts5" ng-if="match.points === 5">
+                                                        +5
+                                                    </span>
+                                            
+                                        </div>
+
+                                    </div>
+                                    
+                                   
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </td>
+                </tr>
+            </tbody>
     	</table>
 	</div>
 </div>

@@ -16,6 +16,22 @@ angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams
 			$scope.groupByName = true;
 		}
 
+		$scope.showMemberDetails = function(member){
+			console.log("here")
+			if(!member.stats){
+				Pool.getUserStats(member.username)
+				.success(function(doc, status){
+					member.stats = doc;
+					console.log(doc);
+				})
+				.error(function(doc, status){
+					console.log(doc);
+				});
+			}
+			member.showMemberDetails=!member.showMemberDetails;
+			member.showDetails = true;
+		}
+
 		var loadPool = function(pool, status){
 
 			$scope.poolToJoin = pool;

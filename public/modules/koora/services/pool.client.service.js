@@ -10,6 +10,9 @@ angular.module('koora').factory('Pool', ['$http', function($http){
 				password: password
 			});
 		},
+		getUserStats: function(user){
+			return $http.get('/stats/user/'+user);
+		},
 		save: function(pool){
 			return $http.post('/Pool', pool);
 		}

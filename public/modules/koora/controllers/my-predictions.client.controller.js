@@ -119,7 +119,6 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 				}
 			});
 
-
 		$scope.changeGroup = function(group){
 			$scope.selectedGroup = _.find($scope.matchSchedule, function(schedule){
 				return schedule.group === group.group;

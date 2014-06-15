@@ -15,7 +15,6 @@ module.exports = function(app) {
 
 
 
-	// Finish by binding the article middleware
 	app.param('name', pool.poolByID);
 	app.param('poolToJoin', pool.poolToJoin);
 };
