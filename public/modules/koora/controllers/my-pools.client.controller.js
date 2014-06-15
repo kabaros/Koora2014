@@ -1,11 +1,12 @@
 'use strict';
 
-angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams', '$location', 'Authentication', 'Pool',
-	function($scope, $stateParams, $location, Authentication, Pool) {
+angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams', '$location', 'Authentication', 'Pool', 'MatchSchedule',
+	function($scope, $stateParams, $location, Authentication, Pool, matchSchedule) {
 
 		var $originalScope = $scope;
 
 		$scope.authentication = Authentication;
+		$scope.teamsNames = matchSchedule.teamsNames;
 		$scope.baseUrl = $location.protocol() + "://" +$location.host() + "/#!/my-leagues";
 		$scope.returnUrl = $location.url();
 		$scope.groupByName = false;

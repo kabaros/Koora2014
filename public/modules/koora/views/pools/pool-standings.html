@@ -23,7 +23,7 @@
                         <div data-ng-show="member.predictions.winner">
                             <img ng-attr-title="{{teamsNames[member.predictions.finalist1]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist1.toLowerCase()}}.png" />
                               
-                            <img title="{{teamsNames[member.predictions.finalist2]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist2.toLowerCase()}}.png" />
+                            <img ng-attr-title="{{teamsNames[member.predictions.finalist2]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist2.toLowerCase()}}.png" />
                         </div>
                     </td>
         			<td>
