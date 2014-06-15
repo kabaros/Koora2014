@@ -14,6 +14,14 @@ angular.module('koora-admin').factory('Admin', [ '$http',
 
 			getMatchScores: function(){
 				return $http.get('/koora-admin/match-score/');
+			},
+
+			getEmails: function(){
+				return $http.get('/koora-admin/email-updates/');
+			},
+
+			generateEmails: function(emailOptions){
+				return $http.post('/koora-admin/email-updates/generate', emailOptions);
 			}
 		};
 	}

@@ -1,10 +1,14 @@
 'use strict';
 
-angular.module('koora-admin').controller('KooraAdminController', ['$scope', 'Authentication', 'MatchSchedule', 'Admin',
-	function($scope, Authentication, MatchSchedule, AdminService) {
+angular.module('koora-admin').controller('KooraAdminController', ['$scope', '$sce', '$location', 'Authentication', 'MatchSchedule', 'Admin',
+	function($scope, $sce, $location, Authentication, MatchSchedule, AdminService) {
 		$scope.authentication = Authentication;
 		$scope.teamsNames = MatchSchedule.teamsNames;
 		
+		if(!Authentication.user || !Authentication.user. roles || !_.contains(Authentication.user.roles, "admin")){
+			$location.path("/");
+		}
+
 		var findByMatchId = function(matches, matchId){
 			return _.find(matches, function(match){
 				return match.matchId === matchId;
@@ -39,6 +43,33 @@ angular.module('koora-admin').controller('KooraAdminController', ['$scope', 'Aut
 				});
 		};
 
+		$scope.renderHtml = function(html_code)
+		{
+		    return $sce.trustAsHtml(html_code);
+		};
+
+		$scope.loadEmails = function(){
+			AdminService.getEmails()
+				.success(function(res, status){
+					$scope.emails = res;
+				})
+				.error(function(res, status){
+					console.log(res, status);
+					alert('error loading emails');
+				});
+		}
+
+		$scope.generateEmails = function(){
+			AdminService.generateEmails($scope.emailToSend)
+				.success(function(res, status){
+					$scope.emails = res;
+				})
+				.error(function(res, status){
+					console.log(res, status);
+					alert('error generating emails');
+				});
+		}
+
 		AdminService.getMatchScores()
 			.success(function(scores){
 				var matches = _.sortBy(_.flatten(_.map(MatchSchedule.schedule, function(group){
@@ -53,8 +84,6 @@ angular.module('koora-admin').controller('KooraAdminController', ['$scope', 'Aut
 					match.team1Score = score.team1Score;
 					match.team2Score = score.team2Score;
 				});
-
-				console.log(matches);
 
 				$scope.matchSchedule = matches;
 			});

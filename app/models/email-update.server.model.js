@@ -16,6 +16,7 @@ var EmailUpdateSchema = new Schema({
 	toEmail: {
 		type: String
 	},
+	subject: String,
 	emailBody: {
 		type: String
 	},

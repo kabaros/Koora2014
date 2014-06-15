@@ -1,6 +1,7 @@
 'use strict';
 var users = require('../../../app/controllers/users'),
-	kooraAdmin = require('../../../app/controllers/admin/koora-admin');
+	kooraAdmin = require('../../../app/controllers/admin/koora-admin'),
+	kooraEmailsAdmin = require('../../../app/controllers/admin/koora-admin-emails');
 
 module.exports = function(app) {
 	// Root routing
@@ -19,9 +20,19 @@ module.exports = function(app) {
 		kooraAdmin.getMatchScores
 	);
 
-	app.route('/koora-admin/send-emails').get(
+	app.route('/koora-admin/email-updates/send').post(
 		users.hasAuthorization(['admin']),
-		kooraAdmin.sendEmails
+		kooraEmailsAdmin.sendEmails
+	);
+
+	app.route('/koora-admin/email-updates').get(
+		users.hasAuthorization(['admin']),
+		kooraEmailsAdmin.getEmailUpdates
+	);
+
+	app.route('/koora-admin/email-updates/generate').post(
+		users.hasAuthorization(['admin']),
+		kooraEmailsAdmin.generateEmails
 	);
 
 	app.route('/koora-admin/update-standings').post(

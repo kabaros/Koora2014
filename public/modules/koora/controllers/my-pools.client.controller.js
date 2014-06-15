@@ -22,10 +22,10 @@ angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams
 				Pool.getUserStats(member.username)
 				.success(function(doc, status){
 					member.stats = doc;
-					console.log(doc);
 				})
 				.error(function(doc, status){
 					console.log(doc);
+					alert("Error loading member stats");
 				});
 			}
 			member.showMemberDetails=!member.showMemberDetails;
