@@ -140,9 +140,11 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 			} else {
 				var userDraw = userScore.team1Score === userScore.team2Score;
 				var userTeam1Win = userScore.team1Score > userScore.team2Score;
+				var userTeam2Win = userScore.team2Score > userScore.team1Score;
 
 				var matchScoreDraw = matchScore.team1Score === matchScore.team2Score;
 				var matchScoreTeam1Win = matchScore.team1Score > matchScore.team2Score;
+				var matchScoreTeam2Win = matchScore.team2Score > matchScore.team1Score;
 
 				var pointsForMatch;
 
@@ -150,7 +152,7 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 					&& userScore.team2Score === matchScore.team2Score){
 					pointsForMatch = 5;
 				}
-				else if ((userDraw && matchScoreDraw) || (userTeam1Win && matchScoreTeam1Win)) {
+				else if ((userDraw && matchScoreDraw) || (userTeam1Win && matchScoreTeam1Win) || (userTeam2Win && matchScoreTeam2Win)) {
 					pointsForMatch = 3;
 				} else {
 					pointsForMatch = -1;
