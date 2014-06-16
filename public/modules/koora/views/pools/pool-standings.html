@@ -48,6 +48,9 @@
                              <div class="col-md-2 col-md-offset-1">
                                 <h4>Next Predictions</h4>
                             </div>
+                            <div class="col-md-9 text-center" ng-if="member.stats.nextMatches.length === 0"><br>
+                                <small>Next Predictions will be shown two hours before the start of each game</small>
+                            </div>
                             <div data-ng-repeat="match in member.stats.nextMatches.slice(0,3) | orderBy:matchId " class="col-md-3 predictions-box">
                                 <div class="row">
                                      <div class="col-md-6">
