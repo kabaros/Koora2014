@@ -3,6 +3,7 @@
 		<table class="table table-condensed">
     		<th>
     			<td></td>
+                <td></td>
     			<td>Points</td>
     			<td>Predicted Final</td>
     			<td>Predicted Winner</td>
@@ -12,10 +13,9 @@
         			<td>
                         <span ng-if="!member.showMemberDetails" class="glyphicon glyphicon-chevron-right">
                                     </span>
-                        <span ng-if="member.showMemberDetails" class="glyphicon glyphicon-chevron-down">
-                        </span>
         			</td>
-                    <td>
+                    <td>{{$index + 1}}</td>
+                    <td class="text-center">
                         {{member.displayName}}
                     </td>
         			<td>{{member.points}}</td>
@@ -36,11 +36,12 @@
                     </td>
         		</tr>
                 <tr class="more-details"  data-ng-if="member.showMemberDetails" data-ng-repeat-end>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="row text-left">
                             
-                            <div class="col-md-offset-1 col-md-12">
-                                <h2 class="name-header" data-ng-click="member.showMemberDetails=!member.showMemberDetails" >{{member.displayName}} ({{member.points}} points)</h2>
+                            <div class="col-md-offset-1 col-md-12" data-ng-click="member.showMemberDetails=!member.showMemberDetails">
+
+                                <h2 class="name-header" >{{member.displayName}} ({{member.points}} points)</h2>
                                 <hr>
                             </div>
                         </div>
