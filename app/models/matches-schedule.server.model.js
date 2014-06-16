@@ -197,12 +197,12 @@ module.exports.schedule = [
 				team2: 'BIH',
 			},{
 				matchId: 43,
-				date: '2014-06-21T17:00+0100',
+				date: '2014-06-25T17:00+0100',
 				team1: 'NGA',
 				team2: 'ARG',
 			},{
 				matchId: 44,
-				date: '2014-06-21T17:00+0100',
+				date: '2014-06-25T17:00+0100',
 				team1: 'BIH',
 				team2: 'IRN',
 			}
