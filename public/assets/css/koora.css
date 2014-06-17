@@ -122,14 +122,14 @@ img.standing-flag {
 	padding: 10px;
 	
 }
-.match-row {
-	height: 150px;
+.match-box {
+	min-height: 260px;
 }
 .match-row .team {
-	font-size: 26px;
+	/*font-size: 26px;
 	width: 40%;
 	float: left;
-	padding:10px;
+	padding:10px;*/
 }
 .match-row .team {
 	text-align: center;

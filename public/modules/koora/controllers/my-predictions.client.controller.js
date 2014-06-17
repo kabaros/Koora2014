@@ -1,6 +1,8 @@
 'use strict';
 
-angular.module('koora').controller('MyPredictionsController', ['$scope','$modal', 'Authentication', 'MatchSchedule', 'ScoreSheet',  function ($scope, $modal, Authentication, matchSchedule, scoreSheet) {
+angular.module('koora').controller('MyPredictionsController', ['$scope', '$timeout', '$filter', '$modal',
+	'Authentication', 'MatchSchedule', 'ScoreSheet', 
+	function ($scope, $timeout, $filter, $modal, Authentication, matchSchedule, scoreSheet) {
 		//$scope.global = Global;
 		$scope.authentication = Authentication;
 
@@ -16,10 +18,16 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    		team.played = team.won = team.drawn = team.lost = team.gf = team.ga = team.pts = 0;
 	    	}
 	    }
+	    var somethingChanged = false, initializing = true;
 
 	    $scope.$watch('matchSchedule', function(newValue, oldValue){
 	    	if(!newValue)
 	    		return;
+	    	if(newValue != oldValue && !initializing){
+	    		console.log('somethingChanged')
+	    		somethingChanged = true;
+	    	}
+
 	    	$scope.missingScores = [];
 	    	$scope.qualifiers = {};
 	    	var standings = $scope.standings;
@@ -126,6 +134,7 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 		};
 
 		//var successSaveModal = $modal.open({title: 'My Title', content: 'My Content', show: false});
+		var saveTooltips = angular.element(document.getElementsByClassName("save-success-tooltip"));
 
 		$scope.checkMissingScores = function(){
 	    	if( $scope.finalist1 && $scope.finalist2 && $scope.winner){
@@ -134,23 +143,61 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 	    		$scope.showMissingFinalists = false;
 	    		saveScoresheet()
 					.success(function(response){
-						setTimeout(function(){
+						somethingChanged = false;
+						$timeout(function(){
 							$scope.savingInProgress = false;
-							$modal.open({template: ' <div class="modal-header"><h3 class="modal-title">Your predictions were successfully saved</h3></div><div class="modal-body text-center"> Make sure to save all your predictions before the start of the tournament. <br/><br/>Changes will be locked two hours before the opening game. <br/><br/>Good luck!</div>'});	
-						}, 1000);
+							angular.element(document.getElementsByClassName('save-success-tooltip')).triggerHandler('showTip');
+							$timeout(function(){
+								angular.element(document.getElementsByClassName('save-success-tooltip')).triggerHandler('hideTip');
+							}, 2000);
+						}, 500)
 					}).error(function(data, status){
 						$scope.savingInProgress = false;
 						alert("error while saving");
 					});
-	    	} else {
-	    		$scope.showMissingScores = true;
+				} else {
+					$scope.showMissingScores = true;
+				}
+			}
+
+	    $scope.allMatchesByDay = {};
+	    
+
+	    
+        //Close the info again
+        // $timeout(function () {
+        //     $("#RegisterHelp").trigger('hide');
+        // }, 3000);
+
+
+	    // $scope.selectedDay = 2;
+
+	    $scope.$watch('selectedDay', function(newValue, oldValue){
+	    	if(somethingChanged){
+	    		$scope.checkMissingScores();
 	    	}
-	    }
+	    });
 
 	    matchSchedule.getSchedule().success(function(res){
-	    	console.log(res);
 	    	$scope.matchSchedule = res;
 	    	$scope.selectedGroup = $scope.matchSchedule[0];
+
+	    	var matchesByDay = _.groupBy(_.sortBy(_.flatten(_.pluck($scope.matchSchedule, 'matches')), function(match){
+	    		return match.date;
+	    	}), function(match){
+	    		return $filter('date')(match.date, 'shortDate');
+	    	});
+
+	    	$scope.daysPagerCount = _.keys(matchesByDay).length;
+	    	$scope.dayToDays = {};
+	    	var i = 0
+	    	_.each(matchesByDay, function(day){
+	    		i++;
+	    		$scope.allMatchesByDay[i] =day;
+	    	});
+
+	    	//current day of tournament
+	    	$scope.selectedDay = Math.round((Date.now() - Date.parse("2014-06-12"))/1000/3600/24);
 
 	    	_.each($scope.matchSchedule, function(group){
 		    	$scope.standings[group.group] = [];
@@ -187,6 +234,8 @@ angular.module('koora').controller('MyPredictionsController', ['$scope','$modal'
 				}).error(function(data, status){
 					alert("Error loading your predictions");
 				});	
+
+				initializing = false;
 			}
 	    });
 	}

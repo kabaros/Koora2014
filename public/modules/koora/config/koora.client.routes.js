@@ -25,6 +25,16 @@ angular.module('koora').config(['$stateProvider',
 			templateUrl: 'modules/koora/views/my-pools.client.view.html'
 		});
 	}
-])
+]);
+
+angular.module('koora').config(['$tooltipProvider', function($tooltipProvider){
+    $tooltipProvider.setTriggers({
+        'mouseenter': 'mouseleave',
+        'click': 'click',
+        'focus': 'blur',
+        'never': 'mouseleave',
+        'showTip': 'hideTip'
+    });
+}]);
 
 angular.module('kooraConfiguration', []);
