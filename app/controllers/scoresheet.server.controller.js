@@ -36,12 +36,13 @@ exports.create = function(req, res) {
 				message: err
 			});
 		} else {
-			User.update({_id: req.user._id}, {
-				predictions: req.body.extraPredictions,
-				missingPredictions: missingPredictions
-			}, function(){
-				res.jsonp(returnedScoresheet);
-			});
+			res.jsonp(returnedScoresheet);
+			// User.update({_id: req.user._id}, {
+			// 	predictions: req.body.extraPredictions,
+			// 	missingPredictions: missingPredictions
+			// }, function(){
+			// 	res.jsonp(returnedScoresheet);
+			// });
 		}
 	};
 	
@@ -88,7 +89,7 @@ exports.create = function(req, res) {
 		console.log("***");
 		
 		ScoreSheet.findOneAndUpdate({user: req.user._id},
-			scoreSheet, {upsert: true}, func);
+			{scores: scoreSheet.scores}, {upsert: true}, func);
 		
 	});
 };
