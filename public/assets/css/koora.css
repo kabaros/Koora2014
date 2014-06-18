@@ -121,13 +121,11 @@ img.standing-flag {
 	border-top: 1px solid #ddd;
 	padding: 10px;
 }
-.match-result {
-	border-left: 1px solid #ddd;
+.last-matches .match-result {
 	border-bottom: 1px solid #ddd;
 }
 .match-box {
 	min-height: 260px;
-	padding: 100px;
 }
 .match-row .team {
 	/*font-size: 26px;
