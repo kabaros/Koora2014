@@ -1,12 +1,5 @@
-<div class="col-sm-7">
+<div class="col-sm-7 col-xs-12">
     <h1 mean-token="'home-default'"></h1>
-
-    <!-- <div class="row">
-        <h2>Group {{selectedGroup.group}}</h2>
-    </div> -->
-    <!-- <div class="row"  data-ng-include="'/modules/koora/views/predictions/groups-selector-strip.client.view.html'">
-        
-    </div> -->
     <h3>Group Stage Predictions</h3>
     <div class="row">
         <div data-ng-hide="authentication.user">
@@ -17,40 +10,40 @@
         </div>
     </div>
     <div class="row text-center">
-        <div class="col-sm-9">
+        <div class="col-xs-12 col-md-9">
             <pagination rotate="false" total-items="daysPagerCount" previous-text="previous day" next-text="next day" items-per-page="1" max-size="5" ng-model="$parent.selectedDay"  class="pagination-sm"></pagination>
         </div>
-        <div class="col-sm-3 save-success-tooltip" tooltip-append-to-body="true" tooltip="Your scores were successfully updated."  tooltip-trigger="showTip" tooltip-placement="right">
+        <div class="col-xs-12 col-md-3 save-success-tooltip" tooltip-append-to-body="true" tooltip="Your scores were successfully updated."  tooltip-trigger="showTip" tooltip-placement="right">
             <div class="loader" data-ng-show="savingInProgress">
             </div>
             <button data-ng-show="!savingInProgress" data-ng-disabled="!authentication.user" data-ng-click="checkMissingScores()" class="btn btn-primary">Save Predictions</button>
         </div>
     </div>
 
-    <div class="col-xs-6 col-md-6 match-box" data-ng-repeat="match in allMatchesByDay[$parent.selectedDay]">
+    <div class="col-xs-12 col-md-6 match-box" data-ng-repeat="match in allMatchesByDay[$parent.selectedDay]">
         <div class="row">
             <div class="col-md-12 col-xs-12">
-                <div class="match-date">{{match.date | date: 'EEEE dd MMM h:mm a'}}</div class="match-date">
+                <div class="match-date">{{match.date | date: 'EEEE dd MMM h:mm a'}}</div>
             </div>
         </div>
         <!-- <div data-ng-repeat="match in matches"> -->
     	<div class="row text-center" data-matchid="{{match.matchid}}">
-            <div class="col-md-12 col-xs-12">
+            <div class="col-xs-12">
                 <div class="row">
-                    <div class="col-md-4 col-xs-4">
+                    <div class="col-xs-6">
                         <img alt="{{teamsNames[match.team1]}}"  data-ng-attr-title="{{teamsNames[match.team1]}}" data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
-                        <span>{{teamsNames[match.team1]}}</span>
+                        <span class="visible-md visible-lg">{{teamsNames[match.team1]}}</span>
                     </div>
-                    <div class="team score col-md-2 col-xs-2">
-                        <input type="text" ng-disabled="match.disabled" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only"/> 
+                    <div class="col-xs-6">
+                        <input type="text" ng-disabled="match.disabled" placeholder="{{match.team1}}" ng-model="match.team1Score" numbers-only="numbers-only" />
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4 col-xs-4">
+                    <div class="col-xs-6">
                         <img alt="{{teamsNames[match.team2]}}" data-ng-attr-title="{{teamsNames[match.team2]}}" data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
-                        <span>{{teamsNames[match.team2]}}</span>
+                        <span  class="visible-md visible-lg">{{teamsNames[match.team2]}}</span>
                     </div>
-                    <div class="team score col-md-2 col-xs-2">
+                    <div class="col-xs-6">
                         <input data-ng-disabled="match.disabled" placeholder="{{match.team2}}" type="text" ng-model="match.team2Score" numbers-only="numbers-only"/>
                     </div>
                 </div>
@@ -60,17 +53,17 @@
     </div>
 
     <div class="row text-center">
-        <div class="col-sm-9">
+        <div class="col-xs-12 col-md-9">
             <pagination rotate="false" total-items="daysPagerCount" previous-text="previous day" next-text="next day" items-per-page="1" max-size="5" ng-model="$parent.selectedDay"  class="pagination-sm"></pagination>
         </div>
-        <div class="col-sm-3 save-success-tooltip" tooltip-append-to-body="true" tooltip="Your scores were successfully updated."  tooltip-trigger="showTip" tooltip-placement="right">
+        <div class="col-xs-12 col-md-3 save-success-tooltip" tooltip-append-to-body="true" tooltip="Your scores were successfully updated."  tooltip-trigger="showTip" tooltip-placement="right">
             <div class="loader" data-ng-show="savingInProgress">
             </div>
             <button data-ng-show="!savingInProgress" data-ng-disabled="!authentication.user" data-ng-click="checkMissingScores()" class="btn btn-primary">Save Predictions</button>
         </div>
     </div>
 </div>
-<div class="col-sm-5" class="prediction-options">
+<div class="col-sm-5 col-xs-12" class="prediction-options">
 
 
     <div data-ng-include="'/modules/koora/views/predictions/finalists-prediction.client.view.html'">

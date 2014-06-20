@@ -55,10 +55,8 @@
 }
 
 .my-predictions input {
-	height: 47px;
-	width: 100px;
-	margin-left: 10px;
-	padding: 5px;
+	
+	width: 100%;
 	text-align: center;
 	line-height: 45px;
 }
