@@ -56,8 +56,7 @@ var getUsers = function(){
 	return deferred.promise;
 };
 
-var getUserStandings = function(userId){
-	console.log('getting user standing', userId);
+var getUserStandings = function(userId){	
 	var deferred = when.defer();
 
 	UserStanding.findOne({user: userId}, function(err, standing){
@@ -84,7 +83,6 @@ var getScores = function(){
 };
 
 var getUserScoresheet = function(user){
-	console.log('<<<<<getting user scoresheet' + user);
 	var deferred = when.defer();
 	Scoresheet.findOne({user: user}, function(err, scoresheet){
 		if(err){
@@ -113,8 +111,15 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 		return _.contains(matchIds, score.matchId);
 	});
 
+	var firstScoreSheetWithPredictions = _.find(_.sortBy(userScoreSheets.scores, function(score){
+		return score.matchId;
+	}), function(score){
+		return !_.isUndefined(score.team1Score) && !_.isUndefined(score.team2Score);
+	}),
+		firstMatchForUser = (firstScoreSheetWithPredictions|| {}).matchId || _.max(matchIds);
+
 	if(matchIds.length === 0 || (userStandings.lastMatchId >= _.max(matchIds))){
-		console.log('nothing to update for user: %s, matchIds: %s', userStandings._id, matchIds);
+		console.log('nothing to update for user: %s', userStandings.user);
 		deferred.resolve({});
 	} else {
 		for(var i=0; i<matchesResults.length; i++){
@@ -122,13 +127,14 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 			var userScore = findByMatchId(userScores, matchScore.matchId);
 			
 			if(!userScore || _.isUndefined(userScore.team1Score) || _.isUndefined(userScore.team2Score)) {
-				userStandings.matches.push({
+				var pointsUpdate = {
 					matchId:  matchScore.matchId,
 					team1Score: (userScore || {}).team1Score,
 					team2Score: (userScore || {}).team2Score,
-					points: -1
-				});
-				userStandings.points = userStandings.points - 1;
+					points: matchScore.matchId > firstMatchForUser? -1 : 0
+				};
+				userStandings.matches.push(pointsUpdate);
+				userStandings.points += pointsUpdate.points;
 			} else {
 				var userDraw = userScore.team1Score === userScore.team2Score;
 				var userTeam1Win = userScore.team1Score > userScore.team2Score;
@@ -222,8 +228,8 @@ exports.updateStandings = function(req, res){
 					.then(function(userScoresheet){
 						return updateStandings(oldStandings || new UserStanding({user: user._id}), userScoresheet, matchScores);
 					}).then(function(doc){
-						if(!doc.points) return;
-
+						if(_.isUndefined(doc.points)) return;
+console.log("updating user", user._id, doc.points);
 						return updateUserWithStandingId(user._id, doc.points);
 					});
 			}).then(function(){

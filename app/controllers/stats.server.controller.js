@@ -120,7 +120,7 @@ exports.getUserStats = function(req, res, next, user) {
 	.then(function(userStandings){
 		var userMatches = _.sortBy(userStandings.matches, function(standing){
 			return standing.date;
-		}).reverse().slice(0, 12);
+		}).reverse().slice(0, 48);
 
 		userMatches = _.map(userMatches, function(match){
 			var matchSchedule = findByMatchId(matchesSchedule, match.matchId),
