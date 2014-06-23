@@ -74,17 +74,18 @@
                         <div class="row text-left">
                             <div class="col-xs-10 col-xs-offset-1">
 
-                                <h5 class="previous-predictions" ng-click="member.hidePreviousPredictions= !member.hidePreviousPredictions">
+                                <h5 class="previous-predictions" ng-click="member.showPreviousPredictions= !member.showPreviousPredictions">
 
-                                    <span ng-if="member.hidePreviousPredictions" class="glyphicon glyphicon-plus-sign">
-                                    </span><span ng-if="!member.hidePreviousPredictions" class="glyphicon glyphicon-minus-sign">
+                                    <span ng-if="!member.showPreviousPredictions" class="glyphicon glyphicon-plus-sign">
+                                    </span><span ng-if="member.showPreviousPredictions" class="glyphicon glyphicon-minus-sign">
                                     </span>
                                     Previous Predictions
-
+                                    <small>({{member.stats.correctScores}} exact scores, {{member.stats.correctOutcomes}} correct outcomes)</small>
                                 </h5>
+
                             </div>
                         </div>
-                        <div class="row" data-ng-hide="member.hidePreviousPredictions">
+                        <div class="row" data-ng-show="member.showPreviousPredictions">
                             <div class="col-xs-12">
                                 <div data-ng-repeat="match in member.stats.userMatches" class="col-xs-12 col-md-3 col-md-offset-1 predictions-box">
                                     <div class="row"></div>

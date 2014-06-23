@@ -23,6 +23,14 @@ angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams
 				Pool.getUserStats(member.username)
 				.success(function(doc, status){
 					member.stats = doc;
+					
+					member.stats.correctScores = _.filter(member.stats.userMatches, function(match){
+						return match.points === 5;
+					}).length;
+
+					member.stats.correctOutcomes = _.filter(member.stats.userMatches, function(match){
+						return match.points === 3;
+					}).length;
 				})
 				.error(function(doc, status){
 					console.log(doc);
