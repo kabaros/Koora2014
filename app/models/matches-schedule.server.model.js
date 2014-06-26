@@ -275,6 +275,51 @@ module.exports.schedule = [
 				team2: 'RUS',
 			}
 		]
+	}, {
+		group: 'Round16',
+		matches: [
+			{
+				matchId: 161,
+				date: '2014-06-28T17:00+0100',
+				team1: 'BRA',
+				team2: 'CHI'
+			},{
+				matchId: 162,
+				date: '2014-06-28T21:00+0100',
+				team1: 'COL',
+				team2: 'URU'
+			},{
+				matchId: 163,
+				date: '2014-06-29T17:00+0100',
+				team1: 'NED',
+				team2: 'MEX'
+			},{
+				matchId: 164,
+				date: '2014-06-29T21:00+0100',
+				team1: 'CRC',
+				team2: 'GRE'
+			},{
+				matchId: 165,
+				date: '2014-06-30T17:00+0100',
+				team1: 'FRA',
+				team2: 'NGA'
+			},{
+				matchId: 166,
+				date: '2014-06-30T21:00+0100',
+				team1: 'GER',
+				team2: 'ALG'
+			},{
+				matchId: 167,
+				date: '2014-07-01T17:00+0100',
+				team1: 'ARG',
+				team2: 'SUI'
+			},{
+				matchId: 168,
+				date: '2014-07-01T21:00+0100',
+				team1: 'BEL',
+				team2: 'USA'
+			}
+		]
 	}
 ];
 

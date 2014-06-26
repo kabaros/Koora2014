@@ -28,85 +28,85 @@ angular.module('koora').controller('MyPredictionsController', ['$scope', '$timeo
 	    		somethingChanged = true;
 	    	}
 
-	    	$scope.missingScores = [];
-	    	$scope.qualifiers = {};
-	    	var standings = $scope.standings;
+	    	// $scope.missingScores = [];
+	    	// $scope.qualifiers = {};
+	    	// var standings = $scope.standings;
 	  
-	    	var standingChanged = false;
-	    	for(var i=0; i<$scope.matchSchedule.length; i++){
-	    		var group = $scope.matchSchedule[i];
-	    		var currentgroup = standings[group.group];
-	    		clearStanding(currentgroup);
+	    	// var standingChanged = false;
+	    	// for(var i=0; i<$scope.matchSchedule.length; i++){
+	    	// 	var group = $scope.matchSchedule[i];
+	    	// 	var currentgroup = standings[group.group];
+	    	// 	clearStanding(currentgroup);
 
-	    		group.scoresAdded = 0;
+	    	// 	group.scoresAdded = 0;
 
-	    		for(var j=0; j<group.matches.length; j++){
-	    			var match = group.matches[j],
-	    				team1 = match.team1,
-	    				team2 = match.team2;
+	    	// 	for(var j=0; j<group.matches.length; j++){
+	    	// 		var match = group.matches[j],
+	    	// 			team1 = match.team1,
+	    	// 			team2 = match.team2;
 
-	    				if(!_.isUndefined(match.team1Score) && !_.isUndefined(match.team2Score)){
-	    					group.scoresAdded++;
-	    					standingChanged = true;
-	    					//teamScore = {played: 0, points: team1points}
+	    	// 			if(!_.isUndefined(match.team1Score) && !_.isUndefined(match.team2Score)){
+	    	// 				group.scoresAdded++;
+	    	// 				standingChanged = true;
+	    	// 				//teamScore = {played: 0, points: team1points}
 	    					
-			    			var team1Standing = _.find(currentgroup, function(item){
-				    				return item.team === team1;
-				    			}),
-			    				team2Standing = _.find(currentgroup, function(item){
-					    			return item.team === team2;
-					    		});
+			   //  			var team1Standing = _.find(currentgroup, function(item){
+				  //   				return item.team === team1;
+				  //   			}),
+			   //  				team2Standing = _.find(currentgroup, function(item){
+					 //    			return item.team === team2;
+					 //    		});
 
-			    			team1Standing.played = ++team1Standing.played;
-			    			team2Standing.played = ++team2Standing.played;
+			   //  			team1Standing.played = ++team1Standing.played;
+			   //  			team2Standing.played = ++team2Standing.played;
 
-			    			team1Standing.gf = team1Standing.gf + match.team1Score;
-			    			team1Standing.ga = team1Standing.ga + match.team2Score;
+			   //  			team1Standing.gf = team1Standing.gf + match.team1Score;
+			   //  			team1Standing.ga = team1Standing.ga + match.team2Score;
 
-			    			team2Standing.gf = team2Standing.gf + match.team2Score;
-			    			team2Standing.ga = team2Standing.ga + match.team1Score;
+			   //  			team2Standing.gf = team2Standing.gf + match.team2Score;
+			   //  			team2Standing.ga = team2Standing.ga + match.team1Score;
 
-			    			if(match.team1Score === match.team2Score){
-			    				team1Standing.pts++;
-			    				team2Standing.pts++;
-			    			}
-			    			else if(match.team1Score > match.team2Score)
-			    				team1Standing.pts  += 3;
-			    			else if (match.team2Score > match.team1Score)
-			    				team2Standing.pts += 3;
-			    			// currentgroup[team1] = team1Standing;
-			    			// currentgroup[team2] = team2Standing;
-	    				}
-	    		}
+			   //  			if(match.team1Score === match.team2Score){
+			   //  				team1Standing.pts++;
+			   //  				team2Standing.pts++;
+			   //  			}
+			   //  			else if(match.team1Score > match.team2Score)
+			   //  				team1Standing.pts  += 3;
+			   //  			else if (match.team2Score > match.team1Score)
+			   //  				team2Standing.pts += 3;
+			   //  			// currentgroup[team1] = team1Standing;
+			   //  			// currentgroup[team2] = team2Standing;
+	    	// 			}
+	    	// 	}
 
-	    		if(group.scoresAdded !== 6) {
-	    			$scope.missingScores.push("Group " + group.group
-	    				+ " is missing " + (6-group.scoresAdded)
-	    				+ " scores.");
-	    		}
+	    	// 	if(group.scoresAdded !== 6) {
+	    	// 		$scope.missingScores.push("Group " + group.group
+	    	// 			+ " is missing " + (6-group.scoresAdded)
+	    	// 			+ " scores.");
+	    	// 	}
 
-	    		$scope.standings[group.group].sort(function(a, b){
-	    			if(a.pts !== b.pts)
-	    				return a.pts<b.pts;
-	    			else {
-	    				var aDiff = a.gf - a.ga,
-	    					bDiff = b.gf - b.ga;
-	    				if(aDiff !== bDiff)
-	    					return aDiff<bDiff;
-	    				else {
-	    					return a.gf<b.gf;
-	    				}
-	    			}
-	    		});
+	    	// 	$scope.standings[group.group].sort(function(a, b){
+	    	// 		if(a.pts !== b.pts)
+	    	// 			return a.pts<b.pts;
+	    	// 		else {
+	    	// 			var aDiff = a.gf - a.ga,
+	    	// 				bDiff = b.gf - b.ga;
+	    	// 			if(aDiff !== bDiff)
+	    	// 				return aDiff<bDiff;
+	    	// 			else {
+	    	// 				return a.gf<b.gf;
+	    	// 			}
+	    	// 		}
+	    	// 	});
 
-	    		var firstQualifier = $scope.standings[group.group][0].team,
-	    			secondQualifier = $scope.standings[group.group][1].team;
+	    	// 	var firstQualifier = $scope.standings[group.group][0].team,
+	    	// 		secondQualifier = $scope.standings[group.group][1].team;
 
-	    		group.qualifiers = [firstQualifier, secondQualifier];
+	    	// 	group.qualifiers = [firstQualifier, secondQualifier];
 
-	    		$scope.qualifiers[firstQualifier] = $scope.teamsNames[firstQualifier];
-	    		$scope.qualifiers[secondQualifier] = $scope.teamsNames[secondQualifier];
-	    	}
+	    	// 	$scope.qualifiers[firstQualifier] = $scope.teamsNames[firstQualifier];
+	    	// 	$scope.qualifiers[secondQualifier] = $scope.teamsNames[secondQualifier];
+	    	// }
 	    }, true);
 		
 		
