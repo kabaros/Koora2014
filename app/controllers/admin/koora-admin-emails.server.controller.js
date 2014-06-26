@@ -165,6 +165,8 @@ module.exports.generateEmails = function(req, res){
 	}).then(function(allUsersStandings){
 		return getAll(MatchScore).then(function(matchScores){
 			return when.map(allUsersStandings, function(userStandings){
+				if(!userStandings.user)
+					return;
 				return getOne(Scoresheet, {user: userStandings.user._id}).then(function(userScoresheet){
 					var emailOptions = {
 						standings: userStandings,
@@ -179,7 +181,7 @@ module.exports.generateEmails = function(req, res){
 				});
 				
 			}).then(function(allEmails){
-				res.jsonp(allEmails);
+				res.jsonp(_.compact(allEmails));
 			});
 		});
 	});
