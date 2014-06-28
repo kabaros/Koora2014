@@ -132,6 +132,7 @@ exports.getUserStats = function(req, res, next, user) {
 				actualTeam2Score = actualMatch.team2Score;
 
 			return {
+				matchId: match.matchId,
 				team1: team1,
 				team2: team2,
 				points: match.points,

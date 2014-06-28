@@ -25,11 +25,11 @@ angular.module('koora').controller('MyPoolsController', ['$scope', '$stateParams
 					member.stats = doc;
 					
 					member.stats.correctScores = _.filter(member.stats.userMatches, function(match){
-						return match.points === 5;
+						return (match.matchId<=48 && match.points === 5) || (match.matchId>48 && match.points === 10);
 					}).length;
 
 					member.stats.correctOutcomes = _.filter(member.stats.userMatches, function(match){
-						return match.points === 3;
+						return (match.matchId<=48 && match.points === 3) || (match.matchId>48 && match.points === 5);
 					}).length;
 				})
 				.error(function(doc, status){

@@ -118,14 +118,11 @@
                                                     <small class="no-prediction" ng-if="angular.isUndefined(match.team1Score)">
                                                          no prediction <span class="pts-label pts-1">-1</span>
                                                     </small>
-                                                    <span class="pts-label pts-1" ng-if="match.points === -1">
-                                                        -1
+                                                    <span class="pts-label pts-1" ng-if="match.points < 0">
+                                                        {{match.points}}
                                                     </span>
-                                                    <span class="pts-label pts3" ng-if="match.points === 3">
-                                                        +3
-                                                    </span>
-                                                    <span class="pts-label pts5" ng-if="match.points === 5">
-                                                        +5
+                                                    <span class="pts-label pts3" ng-if="match.points >= 3">
+                                                        +{{match.points}}
                                                     </span>
                                             
                                         </div>
