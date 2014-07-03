@@ -320,6 +320,31 @@ module.exports.schedule = [
 				team2: 'USA'
 			}
 		]
+	}, {
+		group: 'Round8',
+		matches: [
+			{
+				matchId: 57,
+				date: '2014-07-04T17:00+0100',
+				team1: 'FRA',
+				team2: 'GER'
+			},{
+				matchId: 58,
+				date: '2014-07-04T21:00+0100',
+				team1: 'BRA',
+				team2: 'COL'
+			},{
+				matchId: 59,
+				date: '2014-07-05T17:00+0100',
+				team1: 'ARG',
+				team2: 'BEL'
+			},{
+				matchId: 60,
+				date: '2014-07-05T21:00+0100',
+				team1: 'NED',
+				team2: 'CRC'
+			}
+		]
 	}
 ];
 
