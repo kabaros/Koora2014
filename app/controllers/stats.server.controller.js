@@ -91,7 +91,7 @@ exports.getUserStats = function(req, res, next, user) {
 		var lastMatch = _.max(_.pluck(scores, 'matchId'));
 		nextMatches = _.where(matchesSchedule, function(match){
 			var timeDiff = (new Date(match.date) - Date.now())/1000/3600;
-			return match.matchId > lastMatch && timeDiff < 2;
+			return match.matchId > lastMatch && timeDiff < 1;
 		});
 
 		return getUser(user);

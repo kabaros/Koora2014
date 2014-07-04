@@ -12,7 +12,7 @@ module.exports = function(app) {
 					var timeDiff = 
 						(new Date(match.date) - Date.now())/1000/3600;
 
-					if(timeDiff < 2){
+					if(timeDiff < 1){
 						return _.extend(match, {disabled : true});
 					} else return match;
 				})

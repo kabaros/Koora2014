@@ -54,7 +54,7 @@ exports.create = function(req, res) {
 
 		var timeDiff = (new Date(matchTime) - Date.now())/1000/3600;
 
-		return timeDiff < 2;
+		return timeDiff < 1;
 	}), "matchId");
 
 	console.log("matchesToIgnore", matchesToIgnore);
