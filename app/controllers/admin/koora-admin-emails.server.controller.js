@@ -29,91 +29,96 @@ var storeEmail = function(emailOptions){
 		standings = emailOptions.standings,
 		scoresheet = emailOptions.userScoresheet;
 
+	if(standings.points <= 0){
+		setTimeout(deferred.resolve, 200);
+	}
+	else {
 
-	var matchesInCurrentUpdate = _.pluck(standings.matches, 'matchId');
+		var matchesInCurrentUpdate = _.pluck(standings.matches, 'matchId');
 
-	
-
-	var matchesScores = _.map(matchesInCurrentUpdate, function(matchId){
-		return findByMatchId(emailOptions.matchScores, matchId);
-	});
-
-	
-
-	var predictionsMessage = [], predictionNotProvided;
-	_.each(matchesScores, function(realScore){
-		var prediction = findByMatchId(standings.matches, realScore.matchId);
-
-		var match = findByMatchId(matchesSchedule, realScore.matchId);
 		
-		if(_.isUndefined(prediction.team1Score) || _.isUndefined(prediction.team2Score)){
 
-			predictionsMessage.push('You did not enter a prediction for <strong>'+
-			 teamsNames[match.team1] + '</strong> vs <strong>' + teamsNames[match.team2] +
-			  '</strong>.  -1 points');
-				predictionNotProvided = true;
-		} else { 
-			predictionsMessage.push('<strong>' + 
-				teamsNames[match.team1] + '</strong> ' + prediction.team1Score +
-				' - <strong>' + teamsNames[match.team2] + '</strong> ' + prediction.team2Score +
-				' (' + realScore.team1Score + ' - ' + realScore.team2Score + ')' +
-				'. Points: ' + prediction.points);
-		}
-	});
+		var matchesScores = _.map(matchesInCurrentUpdate, function(matchId){
+			return findByMatchId(emailOptions.matchScores, matchId);
+		});
 
-	predictionsMessage = predictionsMessage.reverse().slice(0, 5);
+		
 
-	var nextMatchPredictionsMessages = [];
+		var predictionsMessage = [], predictionNotProvided;
+		_.each(matchesScores, function(realScore){
+			var prediction = findByMatchId(standings.matches, realScore.matchId);
 
-	_.times(5, function(n){
-		var nextMatchPrediction = findByMatchId(scoresheet.scores, (_.max(matchesInCurrentUpdate) + n + 1));
-		var nextMatch = findByMatchId(matchesSchedule,  _.max(matchesInCurrentUpdate) + n + 1);
+			var match = findByMatchId(matchesSchedule, realScore.matchId);
+			
+			if(_.isUndefined(prediction.team1Score) || _.isUndefined(prediction.team2Score)){
 
-		if(nextMatchPrediction){
+				predictionsMessage.push('You did not enter a prediction for <strong>'+
+				 teamsNames[match.team1] + '</strong> vs <strong>' + teamsNames[match.team2] +
+				  '</strong>.  -1 points');
+					predictionNotProvided = true;
+			} else { 
+				predictionsMessage.push('<strong>' + 
+					teamsNames[match.team1] + '</strong> ' + prediction.team1Score +
+					' - <strong>' + teamsNames[match.team2] + '</strong> ' + prediction.team2Score +
+					' (' + realScore.team1Score + ' - ' + realScore.team2Score + ')' +
+					'. Points: ' + prediction.points);
+			}
+		});
 
-			if(_.isUndefined(nextMatchPrediction.team1Score) || _.isUndefined(nextMatchPrediction.team2Score)){
-				nextMatchPredictionsMessages.push('You have not entered a prediction for <strong>' +
-					teamsNames[nextMatch.team1] + '</strong> vs <strong>' + teamsNames[nextMatch.team2] + '</strong>');
-			} else {
-				nextMatchPredictionsMessages.push(
-				 '<strong>' + teamsNames[nextMatch.team1] + '</strong> ' +
-				 nextMatchPrediction.team1Score + 
-				 ' - ' +'<strong>' + teamsNames[nextMatch.team2] + '</strong> ' +
-				 nextMatchPrediction.team2Score);
-			}	
-		}
-	});
-	
+		predictionsMessage = predictionsMessage.reverse().slice(0, 5);
 
-	var htmlMessage = 'Hello ' + user.displayName + ',' +
-		 '<br/><br/>' +
-		 emailOptions.bodyCustomMessage +
-		  '<br/><br/>' +
-		  '<h2>Your last predictions</h2>' +
-		  predictionsMessage.join('<br/>') + 
-		  '<br/><br/>' +
-		  '<h2>Your predictions for the next games</h2>' +
-		  nextMatchPredictionsMessages.join('<br>') + 
-		  '<br><br><b>You can change your predictions up to two hours from the start of the game.</b><br><br>' +
-		  '<h2>Current Points: '+ user.points +'</h2> ' +
-		  '<a href="http://www.koora2014.com/#!/my-standings"><h4>My Standings</h4></a>'  +
-		  '<a href="http://www.koora2014.com"><h4>Koora 2014</h4></a>'  +
-		  '<a href="https://twitter.com/Koora_WorldCup"><h4>@Koora_WorldCup</h4></a>' ;
+		var nextMatchPredictionsMessages = [];
+
+		_.times(5, function(n){
+			var nextMatchPrediction = findByMatchId(scoresheet.scores, (_.max(matchesInCurrentUpdate) + n + 1));
+			var nextMatch = findByMatchId(matchesSchedule,  _.max(matchesInCurrentUpdate) + n + 1);
+
+			if(nextMatchPrediction){
+
+				if(_.isUndefined(nextMatchPrediction.team1Score) || _.isUndefined(nextMatchPrediction.team2Score)){
+					nextMatchPredictionsMessages.push('You have not entered a prediction for <strong>' +
+						teamsNames[nextMatch.team1] + '</strong> vs <strong>' + teamsNames[nextMatch.team2] + '</strong>');
+				} else {
+					nextMatchPredictionsMessages.push(
+					 '<strong>' + teamsNames[nextMatch.team1] + '</strong> ' +
+					 nextMatchPrediction.team1Score + 
+					 ' - ' +'<strong>' + teamsNames[nextMatch.team2] + '</strong> ' +
+					 nextMatchPrediction.team2Score);
+				}	
+			}
+		});
+		
+
+		var htmlMessage = 'Hello ' + user.displayName + ',' +
+			 '<br/><br/>' +
+			 emailOptions.bodyCustomMessage +
+			  '<br/><br/>' +
+			  '<h2>Your last predictions</h2>' +
+			  predictionsMessage.join('<br/>') + 
+			  '<br/><br/>' +
+			  '<h2>Your predictions for the next games</h2>' +
+			  nextMatchPredictionsMessages.join('<br>') + 
+			  '<br><br><b>You can change your predictions up to two hours from the start of the game.</b><br><br>' +
+			  '<h2>Current Points: '+ user.points +'</h2> ' +
+			  '<a href="http://www.koora2014.com/#!/my-standings"><h4>My Standings</h4></a>'  +
+			  '<a href="http://www.koora2014.com"><h4>Koora 2014</h4></a>'  +
+			  '<a href="https://twitter.com/Koora_WorldCup"><h4>@Koora_WorldCup</h4></a>' ;
 
 
-	 	 var emailUpdate = new EmailUpdate({
-	 	 	user: user._id,
-	 	 	matchId: _.max(matchesInCurrentUpdate),
-	 	 	toEmail: user.email,
-	 	 	subject: emailOptions.subject,
-	 	 	emailBody: htmlMessage
-	 	 });
-	 	 emailUpdate.save(function(err, doc){
-	 	 	if(err){
-	 	 		console.log('error while saving email', err);
-	 	 	}
-	 	 	deferred.resolve(doc|| {});
-	 	 });
+		 	 var emailUpdate = new EmailUpdate({
+		 	 	user: user._id,
+		 	 	matchId: _.max(matchesInCurrentUpdate),
+		 	 	toEmail: user.email,
+		 	 	subject: emailOptions.subject,
+		 	 	emailBody: htmlMessage
+		 	 });
+		 	 emailUpdate.save(function(err, doc){
+		 	 	if(err){
+		 	 		console.log('error while saving email', err);
+		 	 	}
+		 	 	deferred.resolve(doc|| {});
+		 	 });
+	 }
 	return deferred.promise;
 };
 
