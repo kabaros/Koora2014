@@ -345,7 +345,22 @@ module.exports.schedule = [
 				team2: 'CRC'
 			}
 		]
-	}
+	},{
+				group: 'Round4',
+				matches: [
+					{
+						matchId: 61,
+						date: '2014-07-08T21:00+0100',
+						team1: 'BRA',
+						team2: 'GER'
+					},{
+						matchId: 62,
+						date: '2014-07-09T21:00+0100',
+						team1: 'NED',
+						team2: 'ARG'
+					}
+				]
+			}
 ];
 
 module.exports.teamsNames = {
