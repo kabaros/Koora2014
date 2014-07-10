@@ -96,6 +96,9 @@ var UserSchema = new Schema({
 		type: Number,
 		default: 0
 	},
+	finalPoints: Number,
+	winnerPoints: Number,
+	totalPoints: Number,
 	created: {
 		type: Date,
 		default: Date.now

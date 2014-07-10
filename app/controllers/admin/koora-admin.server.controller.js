@@ -182,14 +182,25 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 					points: matchScore.matchId > firstMatchForUser ? -1 : 0
 				};
 				if(matchScore.matchId > firstMatchForUser){
-					pointsUpdate.points = matchScore.matchId > 48 ? -2 : -1;
+					var pointsToDeduct = -1;
+					if(matchScore.matchId > 48){
+						pointsToDeduct = -2 - (Math.abs(matchScore.team1Score - matchScore.team2Score));
+						if(matchScore.matchId > 60)
+							pointsToDeduct = pointsToDeduct * 2;
+					}
+					pointsUpdate.points = pointsToDeduct;
 				} else pointsUpdate.points = 0;
 
 				userStandings.matches.push(pointsUpdate);
 				userStandings.points += pointsUpdate.points;
 			} else {
 				var pointsForMatch;
-				if(matchScore.matchId > 48){
+				if(matchScore.matchId > 60){
+					pointsForMatch = updateSecondRound(userStandings, userScore, matchScore);
+					pointsForMatch = pointsForMatch * 2;
+					console.log(">>>>> match after semi final::: %s , %s", matchScore.matchId, pointsForMatch);
+				}
+				else if(matchScore.matchId > 48){
 					pointsForMatch = updateSecondRound(userStandings, userScore, matchScore);
 				}
 				else {
@@ -222,10 +233,30 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 };
 
 
-var updateUserWithStandingId = function(userId, points){
+var updateUserWithStandingId = function(userId, points, userPredictions){
 	var deferred = when.defer();
 
-	User.findOneAndUpdate({_id: userId}, {points: points}, function(err, doc){
+	var correctFinal = (userPredictions.finalist1 === "GER" || userPredictions.finalist2 == "GER")
+		&& (userPredictions.finalist1 === "ARG" || userPredictions.finalist2 === "ARG");
+
+	var finalPoints = 0, winnerPoints = 0;
+	if(correctFinal){
+		console.log("%s has correct final", userId);
+		finalPoints = 25;
+	}
+
+	//if(userPredictions.winner === "winner"){
+	// winnerPoints = 25;
+	// }
+
+	var totalPoints = points + finalPoints + winnerPoints;
+
+	User.findOneAndUpdate({_id: userId}, {
+		points: points, 
+		finalPoints: finalPoints,
+		winnerPoints: winnerPoints,
+		totalPoints: totalPoints
+	}, function(err, doc){
 		if(err) {
 			console.log('updating user with standingId', err);
 			deferred.reject();
@@ -259,7 +290,7 @@ exports.updateStandings = function(req, res){
 		.then(getUsers)
 		.then(function(users){
 			return when.map(users, function(user){
-				var oldStandings;
+				var oldStandings, userPredictions = user.predictions;
 				return getUserStandings(user._id)
 					.then(function(standings){
 						oldStandings = standings;
@@ -269,7 +300,7 @@ exports.updateStandings = function(req, res){
 						return updateStandings(oldStandings || new UserStanding({user: user._id}), userScoresheet, matchScores);
 					}).then(function(doc){
 						if(_.isUndefined(doc.points)) return;
-						return updateUserWithStandingId(user._id, doc.points);
+						return updateUserWithStandingId(user._id, doc.points, userPredictions);
 					});
 			}).then(function(){
 				console.log('finished updating standings');

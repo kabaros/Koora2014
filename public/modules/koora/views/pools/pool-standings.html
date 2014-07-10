@@ -4,12 +4,14 @@
     		<th>
     			<td></td>
                 <td></td>
-    			<td>Points</td>
+                <td>Final Points</td>
+                <td>Winner Points</td>
+    			<td>Total Points</td>
     			<td>Predicted Final</td>
     			<td>Predicted Winner</td>
     		</th>
             <tbody class="member-details">
-        		<tr class="overview-row" data-ng-hide="member.showMemberDetails" ng-click="showMemberDetails(member)" data-ng-repeat-start="member in selectedPool.members | orderBy:'points':true" >
+        		<tr class="overview-row" data-ng-hide="member.showMemberDetails" ng-click="showMemberDetails(member)" data-ng-repeat-start="member in selectedPool.members | orderBy:'totalPoints':true" >
         			<td>
                         <span ng-if="!member.showMemberDetails" class="glyphicon glyphicon-chevron-right">
                                     </span>
@@ -18,7 +20,23 @@
                     <td class="text-center">
                         {{member.displayName}}
                     </td>
-        			<td>{{member.points}}</td>
+                    <td>
+                        <span class="pts-label pts3" ng-if="member.finalPoints === 25">
+                                +25!
+                        </span>
+                        <span ng-if="member.finalPoints === 0">
+                                0
+                        </span>
+                    </td>
+                    <td>
+                        <span class="pts-label pts3" ng-if="member.winnerPoints === 25">
+                                +25!
+                        </span>
+                        <span ng-if="member.winnerPoints === 0">
+                                0
+                        </span>
+                    </td>
+        			<td>{{member.totalPoints}}</td>
                     <td>
                         <div data-ng-show="member.predictions.winner">
                             <img ng-attr-title="{{teamsNames[member.predictions.finalist1]}}" class="standing-flag" data-ng-src="/assets/flags/{{member.predictions.finalist1.toLowerCase()}}.png" />
@@ -36,7 +54,7 @@
                     </td>
         		</tr>
                 <tr class="more-details"  data-ng-if="member.showMemberDetails" data-ng-repeat-end>
-                    <td colspan="6">
+                    <td colspan="8">
                         <div class="row text-left">
                             
                             <div class="col-xs-offset-1 col-xs-12" data-ng-click="member.showMemberDetails=!member.showMemberDetails">

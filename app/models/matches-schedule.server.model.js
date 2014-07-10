@@ -360,6 +360,21 @@ module.exports.schedule = [
 						team2: 'ARG'
 					}
 				]
+			},{
+				group: 'Last',
+				matches: [
+					{
+						matchId: 63,
+						date: '2014-07-12T21:00+0100',
+						team1: 'BRA',
+						team2: 'NED'
+					},{
+						matchId: 64,
+						date: '2014-07-13T20:00+0100',
+						team1: 'GER',
+						team2: 'ARG'
+					}
+				]
 			}
 ];
 
