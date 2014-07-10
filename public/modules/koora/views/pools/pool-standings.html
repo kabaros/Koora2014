@@ -4,8 +4,9 @@
     		<th>
     			<td></td>
                 <td></td>
-                <td>Final Points</td>
-                <td>Winner Points</td>
+                <td>Points</td>
+                <td>Final</td>
+                <td>Winner</td>
     			<td>Total Points</td>
     			<td>Predicted Final</td>
     			<td>Predicted Winner</td>
@@ -20,6 +21,7 @@
                     <td class="text-center">
                         {{member.displayName}}
                     </td>
+                    <td>{{member.points}}</td>
                     <td>
                         <span class="pts-label pts3" ng-if="member.finalPoints === 25">
                                 +25!
@@ -54,7 +56,7 @@
                     </td>
         		</tr>
                 <tr class="more-details"  data-ng-if="member.showMemberDetails" data-ng-repeat-end>
-                    <td colspan="8">
+                    <td colspan="9">
                         <div class="row text-left">
                             
                             <div class="col-xs-offset-1 col-xs-12" data-ng-click="member.showMemberDetails=!member.showMemberDetails">
