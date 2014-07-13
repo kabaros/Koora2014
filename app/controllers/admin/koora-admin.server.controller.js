@@ -183,7 +183,9 @@ var updateStandings = function(userStandings, userScoreSheets, matchScores){
 				};
 				if(matchScore.matchId > firstMatchForUser){
 					var pointsToDeduct = -1;
-					if(matchScore.matchId > 48){
+					if(matchScore.matchId > 62)
+						pointsToDeduct = 0;
+					else if(matchScore.matchId > 48){
 						pointsToDeduct = -2 - (Math.abs(matchScore.team1Score - matchScore.team2Score));
 						if(matchScore.matchId > 60)
 							pointsToDeduct = pointsToDeduct * 2;
