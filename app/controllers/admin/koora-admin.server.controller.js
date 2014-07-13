@@ -247,9 +247,9 @@ var updateUserWithStandingId = function(userId, points, userPredictions){
 		finalPoints = 25;
 	}
 
-	//if(userPredictions.winner === "winner"){
-	// winnerPoints = 25;
-	// }
+	if(userPredictions.winner === "GER"){
+		winnerPoints = 25;
+	}
 
 	var totalPoints = points + finalPoints + winnerPoints;
 
