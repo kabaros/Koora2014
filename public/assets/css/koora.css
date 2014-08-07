@@ -120,6 +120,7 @@ img.standing-flag {
 	padding: 10px;
 }
 .last-matches .match-result {
+	border-right: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 }
 .match-box {

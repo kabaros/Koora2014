@@ -37,12 +37,6 @@ exports.create = function(req, res) {
 			});
 		} else {
 			res.jsonp(returnedScoresheet);
-			// User.update({_id: req.user._id}, {
-			// 	predictions: req.body.extraPredictions,
-			// 	missingPredictions: missingPredictions
-			// }, function(){
-			// 	res.jsonp(returnedScoresheet);
-			// });
 		}
 	};
 	

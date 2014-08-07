@@ -5,7 +5,7 @@ var users = require('../../app/controllers/users'),
 
 module.exports = function(app) {
 	app.route('/stats/user/:user')
-		.get(users.requiresLogin, stats.getByUser);
+		.get(stats.getByUser);
 
 	app.param('user', stats.getUserStats);
 };

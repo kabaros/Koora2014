@@ -1,22 +1,24 @@
 <div class="alert alert-warning last-matches" data-ng-controller="WidgetsController" data-ng-init="loadScores()">
 	<h4>Last Matches</h4>
-	<hr>
+
 	<div class="row">
-		<div class="col-sm-4 match-result" data-ng-repeat="match in matchesScores">
+		<div class="col-sm-3 match-result" data-ng-repeat="match in matchesScores">
 			<div class="row"></div>
 			<div class="row">
 	            <div class="col-sm-8">
-	                <img class="standing-flag" class="flag" title="{{teamsNames[match.team1]}}" data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
+	                <img class="flag" title="{{teamsNames[match.team1]}}" data-ng-src="/assets/flags/{{match.team1.toLowerCase()}}.png" />
 	            </div>
-	            <div class="col-sm-4">
+	            <div class="col-sm-2">
 	                {{match.team1Score}}
+	            </div>
+	            <div class="col-sm-2">
 	            </div>
 	        </div>
 	        <div class="row">
 	            <div class="col-sm-8">
-	                <img class="standing-flag" title="{{teamsNames[match.team2]}}" data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
+	                <img title="{{teamsNames[match.team2]}}" data-ng-src="/assets/flags/{{match.team2.toLowerCase()}}.png" />
 	            </div>
-	            <div class="col-sm-4">
+	            <div class="col-sm-2">
 	                {{match.team2Score}}
 	            </div>
 	        </div>
